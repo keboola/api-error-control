@@ -35,6 +35,19 @@ class ExceptionListener
         ];
     }
 
+    private function getExceptionMessage(\Throwable $exception): string
+    {
+        if (is_a($exception, UserException::class) || is_a($exception, HttpException::class)) {
+            return  $exception->getMessage();
+        }
+        return 'Internal Server Error occurred.';
+    }
+
+    private function getExceptionId(): string
+    {
+        return 'exception-' . md5(microtime());
+    }
+
     public function onKernelException(GetResponseForExceptionEvent $event) : void
     {
         $exception = $event->getException();
@@ -48,15 +61,10 @@ class ExceptionListener
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             $code = $exception->getCode();
         }
-        $exceptionId = 'runner-sync-api-' . md5(microtime());
-        if (is_a($exception, UserException::class) || is_a($exception, HttpException::class)) {
-            $message = $exception->getMessage();
-        } else {
-            $message = 'Internal Server Error occurred.';
-        }
+        $exceptionId = $this->getExceptionId();
 
         $message = [
-            'error' => $message,
+            'error' => $this->getExceptionMessage($exception),
             'code' => $code,
             'exceptionId' => $exceptionId,
         ];
