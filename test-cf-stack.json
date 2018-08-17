@@ -1,0 +1,79 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Stack for testing API error control library",
+    "Parameters": {
+        "KeboolaStack": {
+            "Type": "String",
+            "Description": "All resources will be tagged by this value."
+        }
+    },
+    "Resources": {
+        "SyncRunnerLogsBucket": {
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Delete"
+        },
+        "SyncRunnerUser": {
+            "Type": "AWS::IAM::User",
+            "DeletionPolicy": "Delete",
+            "Properties": {
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "Owner",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Sid": "UseS3Bucket",
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:PutObject",
+                                        "s3:GetObject",
+                                        "s3:ListBucket",
+                                        "s3:DeleteObject"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Fn::GetAtt": ["SyncRunnerLogsBucket", "Arn"]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "SyncRunnerLogsBucket"
+            ]
+        },
+        "AccessKey": {
+            "Type": "AWS::IAM::AccessKey",
+            "DeletionPolicy": "Delete",
+            "Properties": {
+                "UserName": {
+                    "Ref": "SyncRunnerUser"
+                }
+            },
+            "DependsOn": [
+                "SyncRunnerUser"
+            ]
+        }
+    },
+    "Outputs": {
+        "Region": {
+            "Value": {
+                "Ref": "AWS::Region"
+            }
+        },
+        "AccessKeyId": {
+            "Value": {
+                "Ref": "AccessKey"
+            }
+        },
+        "AccessKeySecret": {
+            "Value": {
+                "Fn::GetAtt": ["AccessKey", "SecretAccessKey"]
+            }
+        }
+    }
+}

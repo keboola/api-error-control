@@ -8,10 +8,11 @@ services:
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-script:
   - export GIT_COMMIT_SHA=$TRAVIS_COMMIT
   - export GIT_BRANCH=$TRAVIS_BRANCH
+  - ./cc-test-reporter before-build
+script:
+  - composer install
   - composer ci
 after_sucess:
   - ./cc-test-reporter after-build --exit-code 0 --debug
