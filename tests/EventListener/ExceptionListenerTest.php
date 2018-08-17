@@ -57,7 +57,7 @@ class ExceptionListenerTest extends TestCase
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::CRITICAL, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertStringStartsWith('runner-sync-api-', $record['context']['exceptionId']);
+        self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
     public function testHandleUserException() : void
@@ -87,7 +87,7 @@ class ExceptionListenerTest extends TestCase
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::CRITICAL, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertStringStartsWith('runner-sync-api-', $record['context']['exceptionId']);
+        self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
     public function testHandleUserExceptionZero() : void
@@ -117,7 +117,7 @@ class ExceptionListenerTest extends TestCase
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::CRITICAL, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertStringStartsWith('runner-sync-api-', $record['context']['exceptionId']);
+        self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
     public function testHandleHttpException() : void
@@ -147,6 +147,6 @@ class ExceptionListenerTest extends TestCase
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::CRITICAL, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertStringStartsWith('runner-sync-api-', $record['context']['exceptionId']);
+        self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 }
