@@ -51,7 +51,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(500, $response->getStatusCode());
         $responseBody = json_decode($response->getContent(), true);
         self::assertCount(3, $responseBody);
-        self::assertStringStartsWith('runner-sync-api-', $responseBody['exceptionId']);
+        self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('12', $responseBody['code']);
         self::assertEquals('Internal Server Error occurred.', $responseBody['error']);
         $record = $handler->getRecords()[0];
@@ -81,7 +81,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(421, $response->getStatusCode());
         $responseBody = json_decode($response->getContent(), true);
         self::assertCount(3, $responseBody);
-        self::assertStringStartsWith('runner-sync-api-', $responseBody['exceptionId']);
+        self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('421', $responseBody['code']);
         self::assertEquals('test user exception', $responseBody['error']);
         $record = $handler->getRecords()[0];
@@ -111,7 +111,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(500, $response->getStatusCode());
         $responseBody = json_decode($response->getContent(), true);
         self::assertCount(3, $responseBody);
-        self::assertStringStartsWith('runner-sync-api-', $responseBody['exceptionId']);
+        self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('0', $responseBody['code']);
         self::assertEquals('test user exception', $responseBody['error']);
         $record = $handler->getRecords()[0];
@@ -141,7 +141,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(403, $response->getStatusCode());
         $responseBody = json_decode($response->getContent(), true);
         self::assertCount(3, $responseBody);
-        self::assertStringStartsWith('runner-sync-api-', $responseBody['exceptionId']);
+        self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('403', $responseBody['code']);
         self::assertEquals('test HTTP exception', $responseBody['error']);
         $record = $handler->getRecords()[0];
