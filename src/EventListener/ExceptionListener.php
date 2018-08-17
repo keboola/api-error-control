@@ -24,9 +24,19 @@ class ExceptionListener
         $this->logger = $logger;
     }
 
+    private function getHeaders() : array
+    {
+        return [
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => '*',
+            'Access-Control-Allow-Headers' => '*',
+            'Cache-Control' => 'private, no-cache, no-store, must-revalidate',
+            'Content-Type' => 'application/json',
+        ];
+    }
+
     public function onKernelException(GetResponseForExceptionEvent $event) : void
     {
-        // You get the exception object from the received event
         $exception = $event->getException();
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
@@ -52,15 +62,7 @@ class ExceptionListener
         ];
         $this->logger->critical($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
 
-        $headers = [
-            'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Methods' => '*',
-            'Access-Control-Allow-Headers' => '*',
-            'Cache-Control' => 'private, no-cache, no-store, must-revalidate',
-            'Content-Type' => 'application/json',
-        ];
-        $response = new JsonResponse($message, $statusCode, $headers);
-        // sends the modified response object to the event
+        $response = new JsonResponse($message, $statusCode, $this->getHeaders());
         $event->setResponse($response);
     }
 }
