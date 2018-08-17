@@ -29,7 +29,7 @@ class LogProcessor
         $this->appName = $appName;
     }
 
-    private function addLoginfo(array $record): array
+    private function addLogInfo(array $record): array
     {
         return array_merge($record, [
             'component' => $this->logInfo->getComponentId(),
@@ -50,11 +50,9 @@ class LogProcessor
         ]);
     }
 
-    private function addExceptionInfo(array $newRecord, string $exceptionId): array
+    private function addExceptionInfo(array $newRecord, string $exceptionId, \Exception $exception): array
     {
         $newRecord['context']['exceptionId'] = $exceptionId;
-        /** @var \Exception $exception */
-        $exception = $record['context']['exception'];
         $handler = new ExceptionHandler();
         try {
             $this->uploader->uploadToS3($handler->getHtml($exception));
@@ -80,10 +78,14 @@ class LogProcessor
             'context' => [],
         ];
         if ($this->logInfo) {
-            $newRecord = $this->addLoginfo($newRecord);
+            $newRecord = $this->addLogInfo($newRecord);
         }
         if (!empty($record['context']['exceptionId'])) {
-            $newRecord = $this->addExceptionInfo($newRecord, $record['context']['exceptionId']);
+            $newRecord = $this->addExceptionInfo(
+                $newRecord,
+                $record['context']['exceptionId'],
+                $record['context']['exception']
+            );
         }
         return $newRecord;
     }
