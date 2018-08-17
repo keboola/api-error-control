@@ -1,0 +1,57 @@
+{
+    "name": "keboola/api-error-control",
+    "type": "library",
+    "license": "MIT",
+    "description": "API Error control library - Utility classes for implementing logging in a KBC API",
+    "authors": [
+        {
+            "name": "Keboola",
+            "email": "devel@keboola.com"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "ext-json": "*",
+        "aws/aws-sdk-php": "^3.64",
+        "monolog/monolog": "^1.23",
+        "symfony/http-foundation": "^4.1",
+        "symfony/http-kernel": "^4.1"
+    },
+    "require-dev": {
+        "jakub-onderka/php-parallel-lint": "^1.0",
+        "keboola/coding-standard": "^5.0",
+        "phpstan/phpstan-shim": "^0.10",
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Keboola\\ErrorControl\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Keboola\\ErrorControl\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "tests": "phpunit --coverage-clover ./build/logs/clover.xml",
+        "phpstan": "phpstan analyse ./src ./tests --level=max --no-progress -c phpstan.neon",
+        "phpcs": "phpcs -n --ignore=vendor --extensions=php .",
+        "phpcbf": "phpcbf -n --ignore=vendor --extensions=php .",
+        "phplint": "parallel-lint -j 10 --exclude vendor .",
+        "build": [
+            "@phplint",
+            "@phpcs",
+            "@phpstan",
+            "@tests"
+        ],
+        "ci": [
+            "@composer validate --no-check-publish --no-check-all",
+            "@build"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    }
+}

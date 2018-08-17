@@ -1,0 +1,5 @@
+services:
+    -
+        class: Keboola\ErrorControl\Tests\AssertNotNullTypeSpecifyingExtension
+        tags:
+            - phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension

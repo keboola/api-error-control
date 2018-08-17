@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Keboola\ErrorControl\Monolog;
+
+use Symfony\Component\Debug\ExceptionHandler;
+
+class LogProcessor
+{
+    /**
+     * @var S3Uploader
+     */
+    private $uploader;
+
+    /**
+     * @var string
+     */
+    private $appName;
+
+    /**
+     * @var ?LogInfo
+     */
+    private $logInfo;
+
+    public function __construct(S3Uploader $uploader, string $appName)
+    {
+        $this->uploader = $uploader;
+        $this->appName = $appName;
+    }
+
+    public function processRecord(array $record) : array
+    {
+        $newRecord = [
+            'message' => $record['message'],
+            'level' => $record['level'],
+            'app' => $this->appName,
+            'pid' => getmypid(),
+            'priority' => $record['level_name'],
+            'context' => [],
+        ];
+        if ($this->logInfo) {
+            $newRecord = array_merge($newRecord, [
+                'component' => $this->logInfo->getComponentId(),
+                'runId' => $this->logInfo->getRunId(),
+                'http' => [
+                    'url' => $this->logInfo->getUri(),
+                    'ip' => $this->logInfo->getClientIp(),
+                    'userAgent' => $this->logInfo->getUserAgent(),
+                ],
+                'token' => [
+                    'id' => $this->logInfo->getTokenId(),
+                    'description' => $this->logInfo->getTokenDescription(),
+                ],
+                'owner' => [
+                    'id' => $this->logInfo->getProjectId(),
+                    'name' => $this->logInfo->getProjectName(),
+                ],
+            ]);
+        }
+        if (!empty($record['context']['exceptionId'])) {
+            $newRecord['context']['exceptionId'] = $record['context']['exceptionId'];
+            /** @var \Exception $exception */
+            $exception = $record['context']['exception'];
+            $handler = new ExceptionHandler();
+            try {
+                $this->uploader->uploadToS3($handler->getHtml($exception));
+            } catch (\Throwable $e) {
+                $newRecord['context']['uploaderError'] = $e->getMessage();
+            }
+            $newRecord['context']['exception'] = [
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+                'trace' => $exception->getTraceAsString(),
+            ];
+        }
+        return $newRecord;
+    }
+
+    public function setLogInfo(LogInfo $logInfo) : void
+    {
+        $this->logInfo = $logInfo;
+    }
+}
