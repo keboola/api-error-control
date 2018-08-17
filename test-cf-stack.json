@@ -33,6 +33,18 @@
                                     ],
                                     "Resource": [
                                         {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    ""
+                                                    {
+                                                        "Fn::GetAtt": ["SyncRunnerLogsBucket", "Arn"]
+                                                    },
+                                                    "/*"
+                                                ]
+                                            ]
+                                        },
+                                        {
                                             "Fn::GetAtt": ["SyncRunnerLogsBucket", "Arn"]
                                         }
                                     ]
