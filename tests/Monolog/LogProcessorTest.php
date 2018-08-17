@@ -35,14 +35,14 @@ class LogProcessorTest extends TestCase
         );
         $processor = new LogProcessor($uploader, 'test-app');
         $newRecord = $processor->processRecord($record);
-        self::assertCount(6, $newRecord);
+        self::assertCount(7, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(250, $newRecord['level']);
         self::assertEquals('test-app', $newRecord['app']);
         self::assertGreaterThan(0, $newRecord['pid']);
         self::assertEquals('NOTICE', $newRecord['priority']);
         self::assertEquals([], $newRecord['context']);
-        self::assertArrayHasKey('extra', $newRecord);
+        self::assertEquals([], $newRecord['extra']);
     }
 
     public function testProcessRecordLogInfo(): void
@@ -74,13 +74,14 @@ class LogProcessorTest extends TestCase
             )
         );
         $newRecord = $processor->processRecord($record);
-        self::assertCount(11, $newRecord);
+        self::assertCount(12, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);
         self::assertEquals('test-app', $newRecord['app']);
         self::assertGreaterThan(0, $newRecord['pid']);
         self::assertEquals('WARNING', $newRecord['priority']);
         self::assertEquals([], $newRecord['context']);
+        self::assertEquals([], $newRecord['extra']);
         self::assertEquals('keboola.docker-demo-sync', $newRecord['component']);
         self::assertEquals('12345678', $newRecord['runId']);
         self::assertCount(3, $newRecord['http']);
@@ -114,7 +115,7 @@ class LogProcessorTest extends TestCase
         );
         $processor = new LogProcessor($uploader, 'test-app');
         $newRecord = $processor->processRecord($record);
-        self::assertCount(6, $newRecord);
+        self::assertCount(7, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
         self::assertEquals(500, $newRecord['level']);
         self::assertEquals('test-app', $newRecord['app']);
@@ -127,7 +128,7 @@ class LogProcessorTest extends TestCase
         self::assertEquals('exception message', $newRecord['context']['exception']['message']);
         self::assertEquals(543, $newRecord['context']['exception']['code']);
         self::assertArrayHasKey('trace', $newRecord['context']['exception']);
-        self::assertArrayHasKey('extra', $newRecord);
+        self::assertEquals([], $newRecord['extra']);
     }
 
     public function testProcessRecordExceptionBrokenUploader(): void
@@ -149,7 +150,7 @@ class LogProcessorTest extends TestCase
         );
         $processor = new LogProcessor($uploader, 'test-app');
         $newRecord = $processor->processRecord($record);
-        self::assertCount(6, $newRecord);
+        self::assertCount(7, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
         self::assertEquals(500, $newRecord['level']);
         self::assertEquals('test-app', $newRecord['app']);
@@ -162,5 +163,6 @@ class LogProcessorTest extends TestCase
         self::assertEquals('exception message', $newRecord['context']['exception']['message']);
         self::assertEquals(543, $newRecord['context']['exception']['code']);
         self::assertArrayHasKey('trace', $newRecord['context']['exception']);
+        self::assertEquals([], $newRecord['extra']);
     }
 }
