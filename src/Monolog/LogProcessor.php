@@ -31,46 +31,26 @@ class LogProcessor
 
     private function addLogInfo(array $record): array
     {
-        if ($this->logInfo) {
-            return array_merge($record, [
-                'component' => $this->logInfo->getComponentId(),
-                'runId' => $this->logInfo->getRunId(),
-                'http' => [
-                    'url' => $this->logInfo->getUri(),
-                    'ip' => $this->logInfo->getClientIp(),
-                    'userAgent' => $this->logInfo->getUserAgent(),
-                ],
-                'token' => [
-                    'id' => $this->logInfo->getTokenId(),
-                    'description' => $this->logInfo->getTokenDescription(),
-                ],
-                'owner' => [
-                    'id' => $this->logInfo->getProjectId(),
-                    'name' => $this->logInfo->getProjectName(),
-                ],
-            ]);
-        }
-        return $record;
+        return array_merge($record, [
+            'component' => $this->logInfo->getComponentId(),
+            'runId' => $this->logInfo->getRunId(),
+            'http' => [
+                'url' => $this->logInfo->getUri(),
+                'ip' => $this->logInfo->getClientIp(),
+                'userAgent' => $this->logInfo->getUserAgent(),
+            ],
+            'token' => [
+                'id' => $this->logInfo->getTokenId(),
+                'description' => $this->logInfo->getTokenDescription(),
+            ],
+            'owner' => [
+                'id' => $this->logInfo->getProjectId(),
+                'name' => $this->logInfo->getProjectName(),
+            ],
+        ]);
     }
 
-    private function addExceptionInfo(array $newRecord, string $exceptionId, \Exception $exception): array
-    {
-        $newRecord['context']['exceptionId'] = $exceptionId;
-        $handler = new ExceptionHandler();
-        try {
-            $this->uploader->uploadToS3($handler->getHtml($exception));
-        } catch (\Throwable $e) {
-            $newRecord['context']['uploaderError'] = $e->getMessage();
-        }
-        $newRecord['context']['exception'] = [
-            'message' => $exception->getMessage(),
-            'code' => $exception->getCode(),
-            'trace' => $exception->getTraceAsString(),
-        ];
-        return $newRecord;
-    }
-
-    public function processRecord(array $record): array
+    public function processRecord(array $record) : array
     {
         $newRecord = [
             'message' => $record['message'],
@@ -80,13 +60,24 @@ class LogProcessor
             'priority' => $record['level_name'],
             'context' => [],
         ];
-        $newRecord = $this->addLogInfo($newRecord);
+        if ($this->logInfo) {
+            $newRecord = $this->addLogInfo($newRecord);
+        }
         if (!empty($record['context']['exceptionId'])) {
-            $newRecord = $this->addExceptionInfo(
-                $newRecord,
-                $record['context']['exceptionId'],
-                $record['context']['exception']
-            );
+            /** @var \Exception $exception */
+            $exception = $record['context']['exception'];
+            $handler = new ExceptionHandler();
+            try {
+                $newRecord['context']['attachment'] = $this->uploader->uploadToS3($handler->getHtml($exception));
+            } catch (\Throwable $e) {
+                $newRecord['context']['uploaderError'] = $e->getMessage();
+            }
+            $newRecord['context']['exceptionId'] = $record['context']['exceptionId'];
+            $newRecord['context']['exception'] = [
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+                'trace' => $exception->getTraceAsString(),
+            ];
         }
         return $newRecord;
     }
