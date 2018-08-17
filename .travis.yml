@@ -16,7 +16,7 @@ before_script:
 script:
   - composer install
   - composer ci
-after_sucess:
+after_success:
   - ./cc-test-reporter after-build --exit-code 0 --debug
 
 notifications:
