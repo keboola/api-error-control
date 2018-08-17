@@ -42,6 +42,7 @@ class LogProcessorTest extends TestCase
         self::assertGreaterThan(0, $newRecord['pid']);
         self::assertEquals('NOTICE', $newRecord['priority']);
         self::assertEquals([], $newRecord['context']);
+        self::assertArrayHasKey('extra', $newRecord);
     }
 
     public function testProcessRecordLogInfo(): void
@@ -126,6 +127,7 @@ class LogProcessorTest extends TestCase
         self::assertEquals('exception message', $newRecord['context']['exception']['message']);
         self::assertEquals(543, $newRecord['context']['exception']['code']);
         self::assertArrayHasKey('trace', $newRecord['context']['exception']);
+        self::assertArrayHasKey('extra', $newRecord);
     }
 
     public function testProcessRecordExceptionBrokenUploader(): void

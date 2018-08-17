@@ -62,6 +62,7 @@ class LogProcessor
             'pid' => getmypid(),
             'priority' => $record['level_name'],
             'context' => [],
+            'extra' => [],
         ];
         $newRecord = $this->addLogInfo($newRecord);
         if (!empty($record['context']['exceptionId'])) {
