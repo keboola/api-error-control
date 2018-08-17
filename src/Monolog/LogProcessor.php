@@ -31,23 +31,26 @@ class LogProcessor
 
     private function addLogInfo(array $record): array
     {
-        return array_merge($record, [
-            'component' => $this->logInfo->getComponentId(),
-            'runId' => $this->logInfo->getRunId(),
-            'http' => [
-                'url' => $this->logInfo->getUri(),
-                'ip' => $this->logInfo->getClientIp(),
-                'userAgent' => $this->logInfo->getUserAgent(),
-            ],
-            'token' => [
-                'id' => $this->logInfo->getTokenId(),
-                'description' => $this->logInfo->getTokenDescription(),
-            ],
-            'owner' => [
-                'id' => $this->logInfo->getProjectId(),
-                'name' => $this->logInfo->getProjectName(),
-            ],
-        ]);
+        if ($this->logInfo) {
+            return array_merge($record, [
+                'component' => $this->logInfo->getComponentId(),
+                'runId' => $this->logInfo->getRunId(),
+                'http' => [
+                    'url' => $this->logInfo->getUri(),
+                    'ip' => $this->logInfo->getClientIp(),
+                    'userAgent' => $this->logInfo->getUserAgent(),
+                ],
+                'token' => [
+                    'id' => $this->logInfo->getTokenId(),
+                    'description' => $this->logInfo->getTokenDescription(),
+                ],
+                'owner' => [
+                    'id' => $this->logInfo->getProjectId(),
+                    'name' => $this->logInfo->getProjectName(),
+                ],
+            ]);
+        }
+        return $record;
     }
 
     private function addExceptionInfo(array $newRecord, string $exceptionId, \Exception $exception): array
@@ -77,9 +80,7 @@ class LogProcessor
             'priority' => $record['level_name'],
             'context' => [],
         ];
-        if ($this->logInfo) {
-            $newRecord = $this->addLogInfo($newRecord);
-        }
+        $newRecord = $this->addLogInfo($newRecord);
         if (!empty($record['context']['exceptionId'])) {
             $newRecord = $this->addExceptionInfo(
                 $newRecord,
