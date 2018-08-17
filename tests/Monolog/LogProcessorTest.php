@@ -119,7 +119,8 @@ class LogProcessorTest extends TestCase
         self::assertEquals('test-app', $newRecord['app']);
         self::assertGreaterThan(0, $newRecord['pid']);
         self::assertEquals('CRITICAL', $newRecord['priority']);
-        self::assertCount(2, $newRecord['context']);
+        self::assertCount(3, $newRecord['context']);
+        self::assertStringStartsWith('https://example.com', $newRecord['context']['attachment']);
         self::assertEquals('12345', $newRecord['context']['exceptionId']);
         self::assertCount(3, $newRecord['context']['exception']);
         self::assertEquals('exception message', $newRecord['context']['exception']['message']);
