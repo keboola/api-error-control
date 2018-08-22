@@ -108,7 +108,7 @@ class ExceptionListenerTest extends TestCase
         self::assertNotNull($response);
         self::assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
-        self::assertEquals(500, $response->getStatusCode());
+        self::assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode($response->getContent(), true);
         self::assertCount(3, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);

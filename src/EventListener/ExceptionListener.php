@@ -55,7 +55,7 @@ class ExceptionListener
             $statusCode = $exception->getStatusCode();
             $code = $statusCode;
         } elseif (is_a($exception, UserException::class)) {
-            $statusCode = $exception->getCode() ? $exception->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
+            $statusCode = $exception->getCode() ? $exception->getCode() : Response::HTTP_BAD_REQUEST;
             $code = $exception->getCode();
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
