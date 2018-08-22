@@ -67,6 +67,7 @@ class ExceptionListener
             'error' => $this->getExceptionMessage($exception),
             'code' => $code,
             'exceptionId' => $exceptionId,
+            'status' => 'error',
         ];
         $this->logger->critical($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
 
