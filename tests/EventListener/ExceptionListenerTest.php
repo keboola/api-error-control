@@ -153,4 +153,27 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals($exception, $record['context']['exception']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
+
+    public function testExceptionEncoding() : void
+    {
+        $request = new Request();
+        $exception = new UserException('test exception with special " \' characters < > ^ $ & end');
+        $event = new GetResponseForExceptionEvent(
+            $this->getKernel(),
+            $request,
+            HttpKernelInterface::MASTER_REQUEST,
+            $exception
+        );
+        $handler = new TestHandler();
+        $logger = new Logger('test', [$handler]);
+        $listener = new ExceptionListener($logger);
+        $listener->onKernelException($event);
+        $response = $event->getResponse();
+        self::assertNotNull($response);
+        self::assertRegExp(
+            '#{"error":"test exception with special \\\" \' characters < > \^ \$ & end","code":0,' .
+                '"exceptionId":"exception-[a-z0-9]+","status":"error"}#',
+            $response->getContent()
+        );
+    }
 }
