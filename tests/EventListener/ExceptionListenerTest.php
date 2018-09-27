@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class ExceptionListenerTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         putenv('KERNEL_CLASS=wtf');
         parent::setUp();
@@ -30,7 +30,7 @@ class ExceptionListenerTest extends TestCase
         return $kernel;
     }
 
-    public function testHandleException() : void
+    public function testHandleException(): void
     {
         $request = new Request();
         $exception = new \Exception('test exception', 12);
@@ -61,7 +61,7 @@ class ExceptionListenerTest extends TestCase
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
-    public function testHandleUserException() : void
+    public function testHandleUserException(): void
     {
         $request = new Request();
         $exception = new UserException('test user exception', 421);
@@ -92,7 +92,7 @@ class ExceptionListenerTest extends TestCase
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
-    public function testHandleUserExceptionZero() : void
+    public function testHandleUserExceptionZero(): void
     {
         $request = new Request();
         $exception = new UserException('test user exception');
@@ -123,7 +123,7 @@ class ExceptionListenerTest extends TestCase
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
-    public function testHandleHttpException() : void
+    public function testHandleHttpException(): void
     {
         $request = new Request();
         $exception = new HttpException(403, 'test HTTP exception');
@@ -154,7 +154,7 @@ class ExceptionListenerTest extends TestCase
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
-    public function testExceptionEncoding() : void
+    public function testExceptionEncoding(): void
     {
         $request = new Request();
         $exception = new UserException('test exception with special " \' characters < > ^ $ & end');

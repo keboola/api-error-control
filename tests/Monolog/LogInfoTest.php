@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class LogInfoTest extends TestCase
 {
-    public function testConstruct() : void
+    public function testConstruct(): void
     {
         $logInfo = new LogInfo(
             'runId',
@@ -32,7 +32,7 @@ class LogInfoTest extends TestCase
         self::assertEquals('N/A', $logInfo->getUserAgent());
     }
 
-    public function testUserAgent() : void
+    public function testUserAgent(): void
     {
         $_SERVER['HTTP_USER_AGENT'] = 'my-other-ua';
         $logInfo = new LogInfo('', '', '', '', '', '', '', '');
