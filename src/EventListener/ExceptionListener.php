@@ -72,6 +72,7 @@ class ExceptionListener
         $this->logger->critical($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
 
         $response = new JsonResponse($message, $statusCode, $this->getHeaders());
+        $response->setEncodingOptions(0);
         $event->setResponse($response);
     }
 }
