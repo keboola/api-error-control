@@ -87,7 +87,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('test user exception', $responseBody['error']);
         self::assertEquals('error', $responseBody['status']);
         $record = $handler->getRecords()[0];
-        self::assertEquals(Logger::CRITICAL, $record['level']);
+        self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
@@ -118,7 +118,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('test user exception', $responseBody['error']);
         self::assertEquals('error', $responseBody['status']);
         $record = $handler->getRecords()[0];
-        self::assertEquals(Logger::CRITICAL, $record['level']);
+        self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
@@ -149,7 +149,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('test HTTP exception', $responseBody['error']);
         self::assertEquals('error', $responseBody['status']);
         $record = $handler->getRecords()[0];
-        self::assertEquals(Logger::CRITICAL, $record['level']);
+        self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }

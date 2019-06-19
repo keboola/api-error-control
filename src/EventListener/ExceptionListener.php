@@ -24,7 +24,7 @@ class ExceptionListener
         $this->logger = $logger;
     }
 
-    private function getHeaders() : array
+    private function getHeaders(): array
     {
         return [
             'Access-Control-Allow-Origin' => '*',
@@ -48,20 +48,26 @@ class ExceptionListener
         return 'exception-' . md5(microtime());
     }
 
-    public function onKernelException(GetResponseForExceptionEvent $event) : void
+    public function onKernelException(GetResponseForExceptionEvent $event): void
     {
         $exception = $event->getException();
+        $exceptionId = $this->getExceptionId();
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
             $code = $statusCode;
+            $this->logger->error($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
         } elseif (is_a($exception, UserException::class)) {
             $statusCode = $exception->getCode() ? $exception->getCode() : Response::HTTP_BAD_REQUEST;
             $code = $exception->getCode();
+            $this->logger->error($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             $code = $exception->getCode();
+            $this->logger->critical(
+                $exception->getMessage(),
+                ['exceptionId' => $exceptionId, 'exception' => $exception]
+            );
         }
-        $exceptionId = $this->getExceptionId();
 
         $message = [
             'error' => $this->getExceptionMessage($exception),
@@ -69,8 +75,6 @@ class ExceptionListener
             'exceptionId' => $exceptionId,
             'status' => 'error',
         ];
-        $this->logger->critical($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
-
         $response = new JsonResponse($message, $statusCode, $this->getHeaders());
         $response->setEncodingOptions(0);
         $event->setResponse($response);
