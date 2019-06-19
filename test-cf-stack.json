@@ -8,11 +8,11 @@
         }
     },
     "Resources": {
-        "SyncRunnerLogsBucket": {
+        "ApiErrorControlLogsBucket": {
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy": "Delete"
         },
-        "SyncRunnerUser": {
+        "ApiErrorControlUser": {
             "Type": "AWS::IAM::User",
             "DeletionPolicy": "Delete",
             "Properties": {
@@ -38,14 +38,14 @@
                                                 [
                                                     "",
                                                     {
-                                                        "Fn::GetAtt": ["SyncRunnerLogsBucket", "Arn"]
+                                                        "Fn::GetAtt": ["ApiErrorControlLogsBucket", "Arn"]
                                                     },
                                                     "/*"
                                                 ]
                                             ]
                                         },
                                         {
-                                            "Fn::GetAtt": ["SyncRunnerLogsBucket", "Arn"]
+                                            "Fn::GetAtt": ["ApiErrorControlLogsBucket", "Arn"]
                                         }
                                     ]
                                 }
@@ -55,19 +55,7 @@
                 ]
             },
             "DependsOn": [
-                "SyncRunnerLogsBucket"
-            ]
-        },
-        "AccessKey": {
-            "Type": "AWS::IAM::AccessKey",
-            "DeletionPolicy": "Delete",
-            "Properties": {
-                "UserName": {
-                    "Ref": "SyncRunnerUser"
-                }
-            },
-            "DependsOn": [
-                "SyncRunnerUser"
+                "ApiErrorControlLogsBucket"
             ]
         }
     },
@@ -75,16 +63,6 @@
         "Region": {
             "Value": {
                 "Ref": "AWS::Region"
-            }
-        },
-        "AccessKeyId": {
-            "Value": {
-                "Ref": "AccessKey"
-            }
-        },
-        "AccessKeySecret": {
-            "Value": {
-                "Fn::GetAtt": ["AccessKey", "SecretAccessKey"]
             }
         }
     }
