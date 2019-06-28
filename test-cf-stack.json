@@ -64,6 +64,11 @@
             "Value": {
                 "Ref": "AWS::Region"
             }
+        },
+        "S3Bucket": {
+            "Value": {
+                "Ref": "ApiErrorControlLogsBucket"
+            }
         }
     }
 }
