@@ -44,3 +44,10 @@ services:
 $logProcessor = $this->container->get('Keboola\\ErrorControl\\Monolog\\LogProcessor');
 $logProcessor->setLogInfo(new LogInfo(...));
 ```
+
+## Development
+Use the provided `test-cf-stack.json` to create a CloudFormation stack. Use the outputs to set environment variables
+`AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`. Create an access key for the generated user. Set it to the environment 
+variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`. Run tests with `composer ci`. 
+
+Use `docker-compose run dev composer ci` to run tests locally.
