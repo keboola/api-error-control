@@ -32,7 +32,7 @@ class LogProcessor
     private function addLogInfo(array $record): array
     {
         if ($this->logInfo) {
-            return array_merge($record, $this->logInfo->toArray());
+            return array_merge($this->logInfo->toArray(), $record);
         }
         return $record;
     }
