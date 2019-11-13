@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Tests\Monolog;
 
 use Keboola\ErrorControl\Monolog\LogInfo;
+use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
 use Keboola\ErrorControl\Monolog\S3Uploader;
 use Monolog\Logger;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class LogProcessorTest extends TestCase
@@ -163,6 +165,40 @@ class LogProcessorTest extends TestCase
         self::assertEquals('exception message', $newRecord['context']['exception']['message']);
         self::assertEquals(543, $newRecord['context']['exception']['code']);
         self::assertArrayHasKey('trace', $newRecord['context']['exception']);
+        self::assertEquals([], $newRecord['extra']);
+    }
+
+    public function testLogProcessorOnlyUsesLogInfoInterface(): void
+    {
+        $record = [
+            'message' => 'test notice',
+            'level' => Logger::WARNING,
+            'level_name' => 'WARNING',
+        ];
+
+        /** @var MockObject&S3Uploader $uploader */
+        $uploader = $this->createMock(S3Uploader::class);
+        $processor = new LogProcessor($uploader, 'test-app');
+        $processor->setLogInfo(
+            new class implements LogInfoInterface {
+                public function toArray(): array
+                {
+                    return [
+                        'message' => 'will not be overridden',
+                        'level_description' => 'will be added',
+                    ];
+                }
+            }
+        );
+        $newRecord = $processor->processRecord($record);
+        self::assertCount(8, $newRecord);
+        self::assertEquals('test notice', $newRecord['message']);
+        self::assertEquals(300, $newRecord['level']);
+        self::assertEquals('will be added', $newRecord['level_description']);
+        self::assertEquals('test-app', $newRecord['app']);
+        self::assertGreaterThan(0, $newRecord['pid']);
+        self::assertEquals('WARNING', $newRecord['priority']);
+        self::assertEquals([], $newRecord['context']);
         self::assertEquals([], $newRecord['extra']);
     }
 }
