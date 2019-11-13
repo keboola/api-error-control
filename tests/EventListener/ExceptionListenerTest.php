@@ -49,7 +49,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals(500, $response->getStatusCode());
-        $responseBody = json_decode($response->getContent(), true);
+        $responseBody = json_decode((string) $response->getContent(), true);
         self::assertCount(4, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('12', $responseBody['code']);
@@ -80,7 +80,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals(421, $response->getStatusCode());
-        $responseBody = json_decode($response->getContent(), true);
+        $responseBody = json_decode((string) $response->getContent(), true);
         self::assertCount(4, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('421', $responseBody['code']);
@@ -111,7 +111,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals(400, $response->getStatusCode());
-        $responseBody = json_decode($response->getContent(), true);
+        $responseBody = json_decode((string) $response->getContent(), true);
         self::assertCount(4, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('0', $responseBody['code']);
@@ -142,7 +142,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals(403, $response->getStatusCode());
-        $responseBody = json_decode($response->getContent(), true);
+        $responseBody = json_decode((string) $response->getContent(), true);
         self::assertCount(4, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('403', $responseBody['code']);
@@ -173,7 +173,7 @@ class ExceptionListenerTest extends TestCase
         self::assertRegExp(
             '#{"error":"test exception with special \\\" \' characters < > \^ \$ & end","code":0,' .
                 '"exceptionId":"exception-[a-z0-9]+","status":"error"}#',
-            $response->getContent()
+            (string) $response->getContent()
         );
     }
 }
