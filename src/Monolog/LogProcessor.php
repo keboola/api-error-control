@@ -19,7 +19,7 @@ class LogProcessor
     private $appName;
 
     /**
-     * @var LogInfo|null
+     * @var LogInfoInterface|null
      */
     private $logInfo;
 
@@ -32,23 +32,7 @@ class LogProcessor
     private function addLogInfo(array $record): array
     {
         if ($this->logInfo) {
-            return array_merge($record, [
-                'component' => $this->logInfo->getComponentId(),
-                'runId' => $this->logInfo->getRunId(),
-                'http' => [
-                    'url' => $this->logInfo->getUri(),
-                    'ip' => $this->logInfo->getClientIp(),
-                    'userAgent' => $this->logInfo->getUserAgent(),
-                ],
-                'token' => [
-                    'id' => $this->logInfo->getTokenId(),
-                    'description' => $this->logInfo->getTokenDescription(),
-                ],
-                'owner' => [
-                    'id' => $this->logInfo->getProjectId(),
-                    'name' => $this->logInfo->getProjectName(),
-                ],
-            ]);
+            return array_merge($this->logInfo->toArray(), $record);
         }
         return $record;
     }
@@ -84,7 +68,7 @@ class LogProcessor
         return $newRecord;
     }
 
-    public function setLogInfo(LogInfo $logInfo) : void
+    public function setLogInfo(LogInfoInterface $logInfo) : void
     {
         $this->logInfo = $logInfo;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Monolog;
 
-class LogInfo
+class LogInfo implements LogInfoInterface
 {
     /**
      * @var string
@@ -115,5 +115,26 @@ class LogInfo
     public function getComponentId(): string
     {
         return $this->componentId;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'component' => $this->getComponentId(),
+            'runId' => $this->getRunId(),
+            'http' => [
+                'url' => $this->getUri(),
+                'ip' => $this->getClientIp(),
+                'userAgent' => $this->getUserAgent(),
+            ],
+            'token' => [
+                'id' => $this->getTokenId(),
+                'description' => $this->getTokenDescription(),
+            ],
+            'owner' => [
+                'id' => $this->getProjectId(),
+                'name' => $this->getProjectName(),
+            ],
+        ];
     }
 }
