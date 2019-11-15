@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Exception;
 
-class ApplicationException extends \RuntimeException
+use Keboola\CommonExceptions\ApplicationExceptionInterface;
+
+class ApplicationException extends \RuntimeException implements ApplicationExceptionInterface
 {
 }

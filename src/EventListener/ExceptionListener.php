@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\EventListener;
 
-use Keboola\ErrorControl\Exception\UserException;
+use Keboola\CommonExceptions\UserExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -37,7 +37,7 @@ class ExceptionListener
 
     private function getExceptionMessage(\Throwable $exception): string
     {
-        if (is_a($exception, UserException::class) || is_a($exception, HttpException::class)) {
+        if (is_a($exception, UserExceptionInterface::class) || is_a($exception, HttpException::class)) {
             return  $exception->getMessage();
         }
         return 'Internal Server Error occurred.';
@@ -56,7 +56,7 @@ class ExceptionListener
             $statusCode = $exception->getStatusCode();
             $code = $statusCode;
             $this->logger->error($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
-        } elseif (is_a($exception, UserException::class)) {
+        } elseif (is_a($exception, UserExceptionInterface::class)) {
             $statusCode = $exception->getCode() ? $exception->getCode() : Response::HTTP_BAD_REQUEST;
             $code = $exception->getCode();
             $this->logger->error($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
