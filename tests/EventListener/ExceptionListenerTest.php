@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\EventListener;
 
+use Exception;
+use Keboola\CommonExceptions\UserExceptionInterface;
 use Keboola\ErrorControl\EventListener\ExceptionListener;
-use Keboola\ErrorControl\Exception\UserException;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
@@ -61,10 +62,11 @@ class ExceptionListenerTest extends TestCase
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
-    public function testHandleUserException(): void
+    public function testHandleUserExceptionInterface(): void
     {
         $request = new Request();
-        $exception = new UserException('test user exception', 421);
+        $exception = new class ('test user exception', 421) extends Exception implements UserExceptionInterface {
+        };
         $event = new GetResponseForExceptionEvent(
             $this->getKernel(),
             $request,
@@ -95,7 +97,10 @@ class ExceptionListenerTest extends TestCase
     public function testHandleUserExceptionZero(): void
     {
         $request = new Request();
-        $exception = new UserException('test user exception');
+        $exception = new class (
+            'test user exception'
+        ) extends \RuntimeException implements UserExceptionInterface {
+        };
         $event = new GetResponseForExceptionEvent(
             $this->getKernel(),
             $request,
@@ -157,7 +162,10 @@ class ExceptionListenerTest extends TestCase
     public function testExceptionEncoding(): void
     {
         $request = new Request();
-        $exception = new UserException('test exception with special " \' characters < > ^ $ & end');
+        $exception = new class(
+            'test exception with special " \' characters < > ^ $ & end'
+        ) extends \RuntimeException implements UserExceptionInterface {
+        };
         $event = new GetResponseForExceptionEvent(
             $this->getKernel(),
             $request,
