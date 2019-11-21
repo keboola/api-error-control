@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.1",
         "ext-json": "*",
         "aws/aws-sdk-php": "^3.64",
         "keboola/common-exceptions": "^1.0",
