@@ -28,6 +28,7 @@ services:
         tags:
             - { name: monolog.processor, method: processRecord }
 ```
+_Note:_ You need to have `symfony/monolog-bundle` installed for the tag `monolog.processor` to work.  
 - `S3Uploader` - Used by LogProcessor to upload full exception traces into S3. To configure, add the following 
 to `services.yaml`:
 ```yaml
