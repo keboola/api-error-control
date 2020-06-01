@@ -40,7 +40,7 @@ class LogProcessor
         return $record;
     }
 
-    public function processRecord(array $record) : array
+    public function processRecord(array $record): array
     {
         $newRecord = [
             'message' => $record['message'],
@@ -73,7 +73,7 @@ class LogProcessor
         return $newRecord;
     }
 
-    public function setLogInfo(LogInfoInterface $logInfo) : void
+    public function setLogInfo(LogInfoInterface $logInfo): void
     {
         $this->logInfo = $logInfo;
     }
