@@ -7,10 +7,11 @@ namespace Keboola\ErrorControl\EventListener;
 use Keboola\CommonExceptions\UserExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Throwable;
 
 class ExceptionListener
 {
@@ -35,7 +36,7 @@ class ExceptionListener
         ];
     }
 
-    private function getExceptionMessage(\Throwable $exception): string
+    private function getExceptionMessage(Throwable $exception): string
     {
         if (is_a($exception, UserExceptionInterface::class) || is_a($exception, HttpException::class)) {
             return  $exception->getMessage();
@@ -48,9 +49,9 @@ class ExceptionListener
         return 'exception-' . md5(microtime());
     }
 
-    public function onKernelException(GetResponseForExceptionEvent $event): void
+    public function onKernelException(ExceptionEvent $event): void
     {
-        $exception = $event->getException();
+        $exception = $event->getThrowable();
         $exceptionId = $this->getExceptionId();
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
