@@ -180,9 +180,9 @@ class ExceptionListenerTest extends TestCase
         $response = $event->getResponse();
         self::assertNotNull($response);
         self::assertEquals(1, preg_match(
-                '#{"error":"test exception with special \\\" \' characters < > \^ \$ & end","code":0,' .
-                '"exceptionId":"exception-[a-z0-9]+","status":"error"}#',
-                (string) $response->getContent()
+            '#{"error":"test exception with special \\\" \' characters < > \^ \$ & end","code":0,' .
+            '"exceptionId":"exception-[a-z0-9]+","status":"error"}#',
+            (string) $response->getContent()
         ));
     }
 }
