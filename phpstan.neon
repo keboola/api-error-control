@@ -5,5 +5,3 @@ services:
             - phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
 parameters:
     checkMissingIterableValueType: false
-    ignoreErrors:
-        - '~Call to an undefined static method Keboola\\ErrorControl\\Tests\\EventListener\\ExceptionListenerTest\:\:assertMatchesRegularExpression\(\)\.~'
