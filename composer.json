@@ -14,6 +14,8 @@
         "ext-json": "*",
         "aws/aws-sdk-php": "^3.138",
         "keboola/common-exceptions": "^1.0",
+        "microsoft/azure-storage-blob": "^1.5",
+        "microsoft/azure-storage-file": "^1.2",
         "monolog/monolog": "^1.23|^2.0",
         "symfony/http-foundation": "^4.3|^5.0",
         "symfony/http-kernel": "^4.3|^5.0"
