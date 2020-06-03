@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Monolog;
 
 use Exception;
+use Keboola\ErrorControl\Uploader\AbstractUploader;
 use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Throwable;
 
 class LogProcessor
 {
     /**
-     * @var S3Uploader
+     * @var AbstractUploader
      */
     private $uploader;
 
@@ -26,7 +26,7 @@ class LogProcessor
      */
     private $logInfo;
 
-    public function __construct(S3Uploader $uploader, string $appName)
+    public function __construct(AbstractUploader $uploader, string $appName)
     {
         $this->uploader = $uploader;
         $this->appName = $appName;
@@ -57,7 +57,7 @@ class LogProcessor
             $exception = $record['context']['exception'];
             try {
                 $renderer = new HtmlErrorRenderer(true);
-                $newRecord['context']['attachment'] = $this->uploader->uploadToS3(
+                $newRecord['context']['attachment'] = $this->uploader->upload(
                     $renderer->render($exception)->getAsString()
                 );
             } catch (Throwable $e) {

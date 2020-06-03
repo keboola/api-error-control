@@ -8,7 +8,7 @@ use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
-use Keboola\ErrorControl\Monolog\S3Uploader;
+use Keboola\ErrorControl\Uploader\S3Uploader;
 use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

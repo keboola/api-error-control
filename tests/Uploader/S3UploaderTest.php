@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Keboola\ErrorControl\Tests\Monolog;
+namespace Keboola\ErrorControl\Tests\Uploader;
 
 use Aws\S3\S3Client;
 use GuzzleHttp\Psr7\Stream;
-use Keboola\ErrorControl\Monolog\S3Uploader;
+use Keboola\ErrorControl\Uploader\S3Uploader;
 use PHPUnit\Framework\TestCase;
 
 class S3UploaderTest extends TestCase
@@ -27,7 +27,7 @@ class S3UploaderTest extends TestCase
             (string) getenv('S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
-        $result = $uploader->uploadToS3('some content');
+        $result = $uploader->upload('some content');
         self::assertStringStartsWith($basePath, $result);
         $s3client = new S3Client([
             'version' => '2006-03-01',

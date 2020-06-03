@@ -29,11 +29,11 @@ services:
             - { name: monolog.processor, method: processRecord }
 ```
 _Note:_ You need to have `symfony/monolog-bundle` installed for the tag `monolog.processor` to work.  
-- `S3Uploader` - Used by LogProcessor to upload full exception traces into S3. To configure, add the following 
+- `UploaderFactory` - Used by LogProcessor to upload full exception traces into S3 or ABS. To configure, add the following 
 to `services.yaml`:
 ```yaml
 services:
-    Keboola\ErrorControl\Monolog\S3Uploader:
+    Keboola\ErrorControl\Uploader\UploaderFactory:
         arguments:
             $storageApiUrl: "%storage_api_url%"
             $s3bucket: "%logs_s3_bucket%"
@@ -48,7 +48,16 @@ $logProcessor->setLogInfo(new LogInfo(...));
 
 ## Development
 Use the provided `test-cf-stack.json` to create a CloudFormation stack. Use the outputs to set environment variables
-`AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`. Create an access key for the generated user. Set it to the environment 
+`AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`. Use the provided `test-arm-template.json` to create ARM stack:
+
+    az group create --name testing-api-error-control --location "East US"
+
+    az deployment group create --resource-group testing-api-error-control --template-file test-arm-template.json --parameters vault_name=testing-key-vault-client tenant_id=9b85ee6f-xxxxxxxxxxxxxxxxxxxxxxxxxxx service_principal_object_id=7f7a8a4c-xxxxxxxxxxxxxxxxxxxxxxxxxxx group_object_id=a1e8da73-xxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+
+`ABS_CONNECTION_STRING` 
+Create an access key for the generated user. Set it to the environment 
 variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`. Run tests with `composer ci`. 
 
 Use `docker-compose run dev composer ci` to run tests locally.
