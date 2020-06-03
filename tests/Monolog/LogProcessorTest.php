@@ -8,7 +8,6 @@ use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
-use Keboola\ErrorControl\Uploader\S3Uploader;
 use Keboola\ErrorControl\Uploader\UploaderFactory;
 use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -46,6 +45,64 @@ class LogProcessorTest extends TestCase
         self::assertGreaterThan(0, $newRecord['pid']);
         self::assertEquals('NOTICE', $newRecord['priority']);
         self::assertEquals([], $newRecord['context']);
+        self::assertEquals([], $newRecord['extra']);
+    }
+
+    public function testLogProcessorLazyInitUploader(): void
+    {
+        $record = [
+            'message' => 'test notice',
+            'level' => Logger::NOTICE,
+            'level_name' => 'NOTICE',
+        ];
+
+        $uploaderFactory = new UploaderFactory('https://example.com');
+        $processor = new LogProcessor($uploaderFactory, 'test-app');
+        $newRecord = $processor->processRecord($record);
+        self::assertCount(7, $newRecord);
+        self::assertEquals('test notice', $newRecord['message']);
+        self::assertEquals(250, $newRecord['level']);
+        self::assertEquals('test-app', $newRecord['app']);
+        self::assertGreaterThan(0, $newRecord['pid']);
+        self::assertEquals('NOTICE', $newRecord['priority']);
+        self::assertEquals([], $newRecord['context']);
+        self::assertEquals([], $newRecord['extra']);
+    }
+
+    public function testLogProcessorLazyInitUploaderFail(): void
+    {
+        $record = [
+            'message' => 'test exception',
+            'level' => Logger::CRITICAL,
+            'level_name' => 'CRITICAL',
+            'context' => [
+                'exceptionId' => '12345',
+                'exception' => new Exception('exception message', 543),
+            ],
+        ];
+
+        $uploaderFactory = new UploaderFactory('https://example.com');
+        $processor = new LogProcessor($uploaderFactory, 'test-app');
+        $newRecord = $processor->processRecord($record);
+        self::assertCount(7, $newRecord);
+        self::assertEquals('test exception', $newRecord['message']);
+        self::assertEquals(500, $newRecord['level']);
+        self::assertEquals('test-app', $newRecord['app']);
+        self::assertGreaterThan(0, $newRecord['pid']);
+        self::assertEquals('CRITICAL', $newRecord['priority']);
+        self::assertArrayHasKey('trace', $newRecord['context']['exception']);
+        unset($newRecord['context']['exception']['trace']); // doesn't make sense to test
+        self::assertEquals(
+            [
+                'uploaderError' => 'No uploader can be configured.',
+                'exceptionId' => '12345',
+                'exception' => [
+                    'message' => 'exception message',
+                    'code' => '543',
+                ],
+            ],
+            $newRecord['context']
+        );
         self::assertEquals([], $newRecord['extra']);
     }
 

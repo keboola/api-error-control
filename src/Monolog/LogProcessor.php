@@ -18,6 +18,11 @@ class LogProcessor
     private $uploader;
 
     /**
+     * @var UploaderFactory
+     */
+    private $uploaderFactory;
+
+    /**
      * @var string
      */
     private $appName;
@@ -29,7 +34,7 @@ class LogProcessor
 
     public function __construct(UploaderFactory $factory, string $appName)
     {
-        $this->uploader = $factory->getUploader();
+        $this->uploaderFactory = $factory;
         $this->appName = $appName;
     }
 
@@ -39,6 +44,14 @@ class LogProcessor
             return array_merge($this->logInfo->toArray(), $record);
         }
         return $record;
+    }
+
+    private function getUploader(): AbstractUploader
+    {
+        if (!$this->uploader) {
+            $this->uploader = $this->uploaderFactory->getUploader();
+        }
+        return $this->uploader;
     }
 
     public function processRecord(array $record): array
@@ -58,7 +71,7 @@ class LogProcessor
             $exception = $record['context']['exception'];
             try {
                 $renderer = new HtmlErrorRenderer(true);
-                $newRecord['context']['attachment'] = $this->uploader->upload(
+                $newRecord['context']['attachment'] = $this->getUploader()->upload(
                     $renderer->render($exception)->getAsString()
                 );
             } catch (Throwable $e) {
