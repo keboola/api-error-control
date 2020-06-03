@@ -36,5 +36,5 @@ abstract class AbstractUploader
         $this->storageApiUrl = $storageApiUrl;
     }
 
-    public abstract function upload(string $content): string;
+    abstract public function upload(string $content): string;
 }

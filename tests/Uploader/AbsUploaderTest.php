@@ -32,7 +32,7 @@ class AbsUploaderTest extends TestCase
         $returnUrl = $uploader->upload('some content');
         self::assertStringStartsWith($basePath, $returnUrl);
         preg_match('#\?file=(.*)#', $returnUrl, $matches);
-        $blobClient = BlobRestProxy::createBlobService( (string) getenv('ABS_CONNECTION_STRING'));
+        $blobClient = BlobRestProxy::createBlobService((string) getenv('ABS_CONNECTION_STRING'));
         $blob = $blobClient->getBlob((string) getenv('ABS_CONTAINER'), $matches[1]);
         self::assertEquals('some content', fread($blob->getContentStream(), 1000));
         self::assertEquals('text/html', $blob->getProperties()->getContentType());

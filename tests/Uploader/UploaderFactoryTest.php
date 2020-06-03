@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Keboola\ErrorControl\Tests\Uploader;
 
 use Keboola\ErrorControl\Uploader\AbsUploader;
@@ -10,7 +12,7 @@ use RuntimeException;
 
 class UploaderFactoryTest extends TestCase
 {
-    public function testGetS3Uploader()
+    public function testGetS3Uploader(): void
     {
         $factory = new UploaderFactory(
             'https:\\example.com',
@@ -20,7 +22,7 @@ class UploaderFactoryTest extends TestCase
         self::assertInstanceOf(S3Uploader::class, $factory->getUploader());
     }
 
-    public function testGetAbsUploader()
+    public function testGetAbsUploader(): void
     {
         $factory = new UploaderFactory(
             'https:\\example.com',
@@ -32,7 +34,7 @@ class UploaderFactoryTest extends TestCase
         self::assertInstanceOf(AbsUploader::class, $factory->getUploader());
     }
 
-    public function testInvalid()
+    public function testInvalid(): void
     {
         $factory = new UploaderFactory('https:\\example.com');
         self::expectException(RuntimeException::class);
