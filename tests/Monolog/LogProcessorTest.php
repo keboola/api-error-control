@@ -9,6 +9,7 @@ use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
 use Keboola\ErrorControl\Uploader\S3Uploader;
+use Keboola\ErrorControl\Uploader\UploaderFactory;
 use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -31,12 +32,12 @@ class LogProcessorTest extends TestCase
             'level_name' => 'NOTICE',
         ];
 
-        $uploader = new S3Uploader(
+        $uploaderFactory = new UploaderFactory(
             'https://example.com',
             (string) getenv('S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
-        $processor = new LogProcessor($uploader, 'test-app');
+        $processor = new LogProcessor($uploaderFactory, 'test-app');
         $newRecord = $processor->processRecord($record);
         self::assertCount(7, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
@@ -58,12 +59,12 @@ class LogProcessorTest extends TestCase
             'level_name' => 'WARNING',
         ];
 
-        $uploader = new S3Uploader(
+        $uploaderFactory = new UploaderFactory(
             'https://example.com',
             (string) getenv('S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
-        $processor = new LogProcessor($uploader, 'test-app');
+        $processor = new LogProcessor($uploaderFactory, 'test-app');
         $processor->setLogInfo(
             new LogInfo(
                 '12345678',
@@ -111,12 +112,12 @@ class LogProcessorTest extends TestCase
             ],
         ];
 
-        $uploader = new S3Uploader(
+        $uploaderFactory = new UploaderFactory(
             'https://example.com',
             (string) getenv('S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
-        $processor = new LogProcessor($uploader, 'test-app');
+        $processor = new LogProcessor($uploaderFactory, 'test-app');
         $newRecord = $processor->processRecord($record);
         self::assertCount(7, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
@@ -146,12 +147,12 @@ class LogProcessorTest extends TestCase
             ],
         ];
 
-        $uploader = new S3Uploader(
+        $uploaderFactory = new UploaderFactory(
             'https://example.com',
             'runner-non-existent-bucket',
             (string) getenv('AWS_DEFAULT_REGION')
         );
-        $processor = new LogProcessor($uploader, 'test-app');
+        $processor = new LogProcessor($uploaderFactory, 'test-app');
         $newRecord = $processor->processRecord($record);
         self::assertCount(7, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
@@ -177,9 +178,11 @@ class LogProcessorTest extends TestCase
             'level_name' => 'WARNING',
         ];
 
-        /** @var MockObject&S3Uploader $uploader */
-        $uploader = $this->createMock(S3Uploader::class);
-        $processor = new LogProcessor($uploader, 'test-app');
+        /** @var MockObject&UploaderFactory $uploaderFactory */
+        $uploaderFactory = self::getMockBuilder(UploaderFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $processor = new LogProcessor($uploaderFactory, 'test-app');
         $processor->setLogInfo(
             new class implements LogInfoInterface {
                 public function toArray(): array

@@ -6,6 +6,7 @@ namespace Keboola\ErrorControl\Monolog;
 
 use Exception;
 use Keboola\ErrorControl\Uploader\AbstractUploader;
+use Keboola\ErrorControl\Uploader\UploaderFactory;
 use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
 use Throwable;
 
@@ -26,9 +27,9 @@ class LogProcessor
      */
     private $logInfo;
 
-    public function __construct(AbstractUploader $uploader, string $appName)
+    public function __construct(UploaderFactory $factory, string $appName)
     {
-        $this->uploader = $uploader;
+        $this->uploader = $factory->getUploader();
         $this->appName = $appName;
     }
 
