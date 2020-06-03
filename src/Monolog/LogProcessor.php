@@ -48,7 +48,7 @@ class LogProcessor
 
     private function getUploader(): AbstractUploader
     {
-        if (!$this->uploader) {
+        if (empty($this->uploader)) {
             $this->uploader = $this->uploaderFactory->getUploader();
         }
         return $this->uploader;
