@@ -36,13 +36,13 @@ services:
     Keboola\ErrorControl\Uploader\UploaderFactory:
         arguments:
             $storageApiUrl: "%storage_api_url%"
-            $s3bucket: "%logs_s3_bucket%"
-            $awsRegion: "%logs_s3_bucket_region%"
+            $s3Bucket: "%logs_s3_bucket%"
+            $s3Region: "%logs_s3_bucket_region%"
             $absConnectionString: "%log_abs_connection_string%"
             $absContainer: "%log_abs_container%"
         
 ```
-At least one combination of ($s3bucket and $awsRegion) or ($absConnectionString and $absContainer) must be provided. 
+At least one combination of ($s3Bucket and $s3Region) or ($absConnectionString and $absContainer) must be provided. 
 
 - `LogInfo` - A record class used to pass additional information to the log processor. Use it in application code as:
 ```php
@@ -72,7 +72,7 @@ Replace:
 
 ```yaml
 services:
-    Keboola\ErrorControl\Monolog\S3Uploader
+    Keboola\ErrorControl\Monolog\S3Uploader:
         arguments:
             $storageApiUrl: "%storage_api_url%"
             $s3bucket: "%logs_s3_bucket%"
@@ -86,7 +86,11 @@ services:
     Keboola\ErrorControl\Uploader\UploaderFactory:
         arguments:
             $storageApiUrl: "%storage_api_url%"
-            $s3bucket: "%logs_s3_bucket%"
-            $awsRegion: "%logs_s3_bucket_region%"
+            $s3Bucket: "%logs_s3_bucket%"
+            $s3Region: "%logs_s3_bucket_region%"
         
 ```
+
+In case you were using `S3Uploader` directly somewhere, you have to replace the occurrences with `UploaderFactory` 
+and call `getUploader()` method to actually get an uploader.
+  

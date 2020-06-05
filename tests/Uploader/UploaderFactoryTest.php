@@ -38,7 +38,8 @@ class UploaderFactoryTest extends TestCase
     {
         $factory = new UploaderFactory('https:\\example.com');
         self::expectException(RuntimeException::class);
-        self::expectExceptionMessage('No uploader can be configured.');
+        self::expectExceptionMessage('No uploader can be configured: s3Bucket: "NULL", s3Region: "NULL", ' .
+            'absConnectionString: "NULL", absContainer: "NULL"');
         $factory->getUploader();
     }
 }
