@@ -35,13 +35,13 @@ class UploaderFactory
 
     public function __construct(
         string $storageApiUrl,
-        ?string $s3bucket = null,
+        ?string $s3Bucket = null,
         ?string $s3Region = null,
         ?string $absConnectionString = null,
         ?string $absContainer = null
     ) {
         $this->storageApiUrl = $storageApiUrl;
-        $this->s3Bucket = $s3bucket;
+        $this->s3Bucket = $s3Bucket;
         $this->s3Region = $s3Region;
         $this->absConnectionString = $absConnectionString;
         $this->absContainer = $absContainer;
