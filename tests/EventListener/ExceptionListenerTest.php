@@ -10,8 +10,9 @@ use Keboola\ErrorControl\EventListener\ExceptionListener;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -34,8 +35,8 @@ class ExceptionListenerTest extends TestCase
     public function testHandleException(): void
     {
         $request = new Request();
-        $exception = new \Exception('test exception', 12);
-        $event = new GetResponseForExceptionEvent(
+        $exception = new Exception('test exception', 12);
+        $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
             HttpKernelInterface::MASTER_REQUEST,
@@ -67,7 +68,7 @@ class ExceptionListenerTest extends TestCase
         $request = new Request();
         $exception = new class ('test user exception', 421) extends Exception implements UserExceptionInterface {
         };
-        $event = new GetResponseForExceptionEvent(
+        $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
             HttpKernelInterface::MASTER_REQUEST,
@@ -99,9 +100,9 @@ class ExceptionListenerTest extends TestCase
         $request = new Request();
         $exception = new class (
             'test user exception'
-        ) extends \RuntimeException implements UserExceptionInterface {
+        ) extends RuntimeException implements UserExceptionInterface {
         };
-        $event = new GetResponseForExceptionEvent(
+        $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
             HttpKernelInterface::MASTER_REQUEST,
@@ -132,7 +133,7 @@ class ExceptionListenerTest extends TestCase
     {
         $request = new Request();
         $exception = new HttpException(403, 'test HTTP exception');
-        $event = new GetResponseForExceptionEvent(
+        $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
             HttpKernelInterface::MASTER_REQUEST,
@@ -164,9 +165,9 @@ class ExceptionListenerTest extends TestCase
         $request = new Request();
         $exception = new class(
             'test exception with special " \' characters < > ^ $ & end'
-        ) extends \RuntimeException implements UserExceptionInterface {
+        ) extends RuntimeException implements UserExceptionInterface {
         };
-        $event = new GetResponseForExceptionEvent(
+        $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
             HttpKernelInterface::MASTER_REQUEST,
@@ -178,10 +179,10 @@ class ExceptionListenerTest extends TestCase
         $listener->onKernelException($event);
         $response = $event->getResponse();
         self::assertNotNull($response);
-        self::assertRegExp(
+        self::assertEquals(1, preg_match(
             '#{"error":"test exception with special \\\" \' characters < > \^ \$ & end","code":0,' .
-                '"exceptionId":"exception-[a-z0-9]+","status":"error"}#',
+            '"exceptionId":"exception-[a-z0-9]+","status":"error"}#',
             (string) $response->getContent()
-        );
+        ));
     }
 }

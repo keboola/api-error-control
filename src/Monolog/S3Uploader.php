@@ -40,17 +40,17 @@ class S3Uploader
         $this->region = $region;
     }
 
-    private function getFileName() : string
+    private function getFileName(): string
     {
         return date('Y/m/d/H/') . date('Y-m-d-H-i-s') . '-' . uniqid() . '-log.html';
     }
 
-    private function withUrlPrefix(string $logFileName) : string
+    private function withUrlPrefix(string $logFileName): string
     {
         return $this->storageApiUrl . '/' . $this->urlPrefix . $logFileName;
     }
 
-    public function uploadToS3(string $content) : string
+    public function uploadToS3(string $content): string
     {
         /* intentionally don't create the client in ctor, it throws exceptions and these are hard to log
             during symfony application initialization. */

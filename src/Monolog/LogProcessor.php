@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Monolog;
 
-use Symfony\Component\Debug\ExceptionHandler;
+use Exception;
+use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
+use Throwable;
 
 class LogProcessor
 {
@@ -37,7 +40,7 @@ class LogProcessor
         return $record;
     }
 
-    public function processRecord(array $record) : array
+    public function processRecord(array $record): array
     {
         $newRecord = [
             'message' => $record['message'],
@@ -50,12 +53,14 @@ class LogProcessor
         ];
         $newRecord = $this->addLogInfo($newRecord);
         if (!empty($record['context']['exceptionId'])) {
-            /** @var \Exception $exception */
+            /** @var Exception $exception */
             $exception = $record['context']['exception'];
-            $handler = new ExceptionHandler();
             try {
-                $newRecord['context']['attachment'] = $this->uploader->uploadToS3($handler->getHtml($exception));
-            } catch (\Throwable $e) {
+                $renderer = new HtmlErrorRenderer(true);
+                $newRecord['context']['attachment'] = $this->uploader->uploadToS3(
+                    $renderer->render($exception)->getAsString()
+                );
+            } catch (Throwable $e) {
                 $newRecord['context']['uploaderError'] = $e->getMessage();
             }
             $newRecord['context']['exceptionId'] = $record['context']['exceptionId'];
@@ -68,7 +73,7 @@ class LogProcessor
         return $newRecord;
     }
 
-    public function setLogInfo(LogInfoInterface $logInfo) : void
+    public function setLogInfo(LogInfoInterface $logInfo): void
     {
         $this->logInfo = $logInfo;
     }

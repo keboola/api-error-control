@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\Monolog;
 
+use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
@@ -18,7 +19,7 @@ class LogProcessorTest extends TestCase
     {
         parent::setUp();
         if (empty(getenv('S3_LOGS_BUCKET')) || empty(getenv('AWS_DEFAULT_REGION'))) {
-            throw new \Exception('Environment variable S3_LOGS_BUCKET or AWS_DEFAULT_REGION is empty.');
+            throw new Exception('Environment variable S3_LOGS_BUCKET or AWS_DEFAULT_REGION is empty.');
         }
     }
 
@@ -106,7 +107,7 @@ class LogProcessorTest extends TestCase
             'level_name' => 'CRITICAL',
             'context' => [
                 'exceptionId' => '12345',
-                'exception' => new \Exception('exception message', 543),
+                'exception' => new Exception('exception message', 543),
             ],
         ];
 
@@ -141,7 +142,7 @@ class LogProcessorTest extends TestCase
             'level_name' => 'CRITICAL',
             'context' => [
                 'exceptionId' => '12345',
-                'exception' => new \Exception('exception message', 543),
+                'exception' => new Exception('exception message', 543),
             ],
         ];
 
@@ -159,7 +160,7 @@ class LogProcessorTest extends TestCase
         self::assertGreaterThan(0, $newRecord['pid']);
         self::assertEquals('CRITICAL', $newRecord['priority']);
         self::assertCount(3, $newRecord['context']);
-        self::assertContains('The specified bucket does not exist', $newRecord['context']['uploaderError']);
+        self::assertStringContainsString('The specified bucket does not exist', $newRecord['context']['uploaderError']);
         self::assertEquals('12345', $newRecord['context']['exceptionId']);
         self::assertCount(3, $newRecord['context']['exception']);
         self::assertEquals('exception message', $newRecord['context']['exception']['message']);

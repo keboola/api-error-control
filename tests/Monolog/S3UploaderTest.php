@@ -43,7 +43,7 @@ class S3UploaderTest extends TestCase
         self::assertArrayHasKey('Body', $obj);
         /** @var Stream $body */
         $body = $obj['Body'];
-        self::assertEquals('some content', $body->read($body->getSize()));
+        self::assertEquals('some content', $body->read((int) $body->getSize()));
         $s3client->deleteObject([
             'Bucket' => getenv('S3_LOGS_BUCKET'),
             'Key' => $s3Path,

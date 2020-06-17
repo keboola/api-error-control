@@ -10,19 +10,19 @@
         }
     ],
     "require": {
-        "php": "^7.1",
+        "php": ">=7.1",
         "ext-json": "*",
-        "aws/aws-sdk-php": "^3.64",
+        "aws/aws-sdk-php": "^3.138",
         "keboola/common-exceptions": "^1.0",
-        "monolog/monolog": "^1.23",
-        "symfony/http-foundation": "^4.1",
-        "symfony/http-kernel": "^4.1"
+        "monolog/monolog": "^1.23|^2.0",
+        "symfony/http-foundation": "^4.3|^5.0",
+        "symfony/http-kernel": "^4.3|^5.0"
     },
     "require-dev": {
-        "jakub-onderka/php-parallel-lint": "^1.0",
-        "keboola/coding-standard": "^6.0",
-        "phpstan/phpstan-shim": "^0.10",
-        "phpunit/phpunit": "^7.0"
+        "php-parallel-lint/php-parallel-lint": "^1.0",
+        "keboola/coding-standard": "^9.0",
+        "phpstan/phpstan": "^0.12",
+        "phpunit/phpunit": "^8.0|^9.0"
     },
     "autoload": {
         "psr-4": {
