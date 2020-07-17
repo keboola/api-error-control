@@ -2,17 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Keboola\ErrorControl\Monolog;
+namespace Keboola\ErrorControl\Uploader;
 
 use Aws\S3\S3Client;
 
-class S3Uploader
+class S3Uploader extends AbstractUploader
 {
-    /**
-     * @var string
-     */
-    private $urlPrefix = '/admin/utils/logs?file=';
-
     /**
      * @var string
      */
@@ -21,36 +16,16 @@ class S3Uploader
     /**
      * @var string
      */
-    private $s3path = 'debug-files';
-
-    /**
-     * @var string
-     */
-    private $storageApiUrl;
-
-    /**
-     * @var string
-     */
     private $region;
 
     public function __construct(string $storageApiUrl, string $s3bucket, string $region)
     {
-        $this->storageApiUrl = $storageApiUrl;
+        parent::__construct($storageApiUrl);
         $this->s3bucket = $s3bucket;
         $this->region = $region;
     }
 
-    private function getFileName(): string
-    {
-        return date('Y/m/d/H/') . date('Y-m-d-H-i-s') . '-' . uniqid() . '-log.html';
-    }
-
-    private function withUrlPrefix(string $logFileName): string
-    {
-        return $this->storageApiUrl . '/' . $this->urlPrefix . $logFileName;
-    }
-
-    public function uploadToS3(string $content): string
+    public function upload(string $content): string
     {
         /* intentionally don't create the client in ctor, it throws exceptions and these are hard to log
             during symfony application initialization. */
@@ -59,16 +34,15 @@ class S3Uploader
             'retries' => 20,
             'region' => $this->region,
         ]);
-        $s3FileName = $this->getFileName();
+        $s3FileName = $this->generateFilename();
         $s3client->putObject([
             'Bucket' => $this->s3bucket,
-            'Key' => $this->s3path . '/' . $s3FileName,
+            'Key' => $this->path . '/' . $s3FileName,
             'ContentType' => 'text/html',
             'ACL' => 'private',
             'ServerSideEncryption' => 'AES256',
             'Body' => $content,
         ]);
-
-        return $this->withUrlPrefix($s3FileName);
+        return $this->getUrl($s3FileName);
     }
 }

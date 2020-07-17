@@ -5,16 +5,22 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Monolog;
 
 use Exception;
+use Keboola\ErrorControl\Uploader\AbstractUploader;
+use Keboola\ErrorControl\Uploader\UploaderFactory;
 use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Throwable;
 
 class LogProcessor
 {
     /**
-     * @var S3Uploader
+     * @var AbstractUploader
      */
     private $uploader;
+
+    /**
+     * @var UploaderFactory
+     */
+    private $uploaderFactory;
 
     /**
      * @var string
@@ -26,9 +32,9 @@ class LogProcessor
      */
     private $logInfo;
 
-    public function __construct(S3Uploader $uploader, string $appName)
+    public function __construct(UploaderFactory $factory, string $appName)
     {
-        $this->uploader = $uploader;
+        $this->uploaderFactory = $factory;
         $this->appName = $appName;
     }
 
@@ -38,6 +44,14 @@ class LogProcessor
             return array_merge($this->logInfo->toArray(), $record);
         }
         return $record;
+    }
+
+    private function getUploader(): AbstractUploader
+    {
+        if (empty($this->uploader)) {
+            $this->uploader = $this->uploaderFactory->getUploader();
+        }
+        return $this->uploader;
     }
 
     public function processRecord(array $record): array
@@ -57,7 +71,7 @@ class LogProcessor
             $exception = $record['context']['exception'];
             try {
                 $renderer = new HtmlErrorRenderer(true);
-                $newRecord['context']['attachment'] = $this->uploader->uploadToS3(
+                $newRecord['context']['attachment'] = $this->getUploader()->upload(
                     $renderer->render($exception)->getAsString()
                 );
             } catch (Throwable $e) {

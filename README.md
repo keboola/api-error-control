@@ -29,16 +29,21 @@ services:
             - { name: monolog.processor, method: processRecord }
 ```
 _Note:_ You need to have `symfony/monolog-bundle` installed for the tag `monolog.processor` to work.  
-- `S3Uploader` - Used by LogProcessor to upload full exception traces into S3. To configure, add the following 
+- `UploaderFactory` - Used by LogProcessor to upload full exception traces into S3 or ABS. To configure, add the following 
 to `services.yaml`:
 ```yaml
 services:
-    Keboola\ErrorControl\Monolog\S3Uploader:
+    Keboola\ErrorControl\Uploader\UploaderFactory:
         arguments:
             $storageApiUrl: "%storage_api_url%"
-            $s3bucket: "%logs_s3_bucket%"
-            $region: "%logs_s3_bucket_region%"
-```            
+            $s3Bucket: "%logs_s3_bucket%"
+            $s3Region: "%logs_s3_bucket_region%"
+            $absConnectionString: "%log_abs_connection_string%"
+            $absContainer: "%log_abs_container%"
+        
+```
+At least one combination of ($s3Bucket and $s3Region) or ($absConnectionString and $absContainer) must be provided. 
+
 - `LogInfo` - A record class used to pass additional information to the log processor. Use it in application code as:
 ```php
 /** @var LogProcessor $logProcessor */
@@ -49,6 +54,43 @@ $logProcessor->setLogInfo(new LogInfo(...));
 ## Development
 Use the provided `test-cf-stack.json` to create a CloudFormation stack. Use the outputs to set environment variables
 `AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`. Create an access key for the generated user. Set it to the environment 
-variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`. Run tests with `composer ci`. 
+variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+Use the provided `test-arm-template.json` to create ARM stack:
+
+    az group create --name testing-api-error-control --location "East US"
+
+    az deployment group create --resource-group testing-api-error-control --template-file test-arm-template.json --parameters storage_account_name=testingapierrorcontrol container_name=test-container
+
+Go to the [Azure Portal](https://portal.azure.com/) - Storage Account - Access Keys and copy connection string. 
+Go to Storage Account - Lifecycle Management - and set a cleanup rule to remove files older than 1 day from the container.
+Set  `ABS_CONNECTION_STRING` and `ABS_CONTAINER`. Run tests with `composer ci`. 
 
 Use `docker-compose run dev composer ci` to run tests locally.
+
+## Migration From 2.x to 3.x
+Replace:
+
+```yaml
+services:
+    Keboola\ErrorControl\Monolog\S3Uploader:
+        arguments:
+            $storageApiUrl: "%storage_api_url%"
+            $s3bucket: "%logs_s3_bucket%"
+            $region: "%logs_s3_bucket_region%"
+```
+
+with:
+ 
+```yaml
+services:
+    Keboola\ErrorControl\Uploader\UploaderFactory:
+        arguments:
+            $storageApiUrl: "%storage_api_url%"
+            $s3Bucket: "%logs_s3_bucket%"
+            $s3Region: "%logs_s3_bucket_region%"
+        
+```
+
+In case you were using `S3Uploader` directly somewhere, you have to replace the occurrences with `UploaderFactory` 
+and call `getUploader()` method to actually get an uploader.
+  
