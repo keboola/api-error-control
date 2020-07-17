@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\Uploader;
 
-use Aws\S3\S3Client;
-use GuzzleHttp\Psr7\Stream;
+use Exception;
 use Keboola\ErrorControl\Uploader\AbsUploader;
-use Keboola\ErrorControl\Uploader\S3Uploader;
 use MicrosoftAzure\Storage\Blob\BlobRestProxy;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +15,7 @@ class AbsUploaderTest extends TestCase
     {
         parent::setUp();
         if (empty(getenv('ABS_CONNECTION_STRING')) || empty(getenv('ABS_CONTAINER'))) {
-            throw new \Exception('Environment variable ABS_CONNECTION_STRING or ABS_CONTAINER is empty.');
+            throw new Exception('Environment variable ABS_CONNECTION_STRING or ABS_CONTAINER is empty.');
         }
     }
 
