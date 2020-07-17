@@ -12,14 +12,16 @@
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2019-04-01",
+            "apiVersion": "2019-06-01",
             "name": "[parameters('storage_account_name')]",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_LRS"
             },
             "kind": "StorageV2",
-            "accessTier": "Cool",
+            "properties": {
+                "accessTier": "Cool"
+            },
             "resources": [
                 {
                     "type": "blobServices/containers",
