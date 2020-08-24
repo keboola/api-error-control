@@ -73,14 +73,11 @@ class ExceptionListener
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             $code = $exception->getCode();
-            $this->logger->critical(
-                $exception->getMessage(),
-                [
-                    'exceptionId' => $exceptionId,
-                    'exception' => $exception,
-                    'context' => $this->getExceptionContext($exception),
-                ]
-            );
+            $this->logger->critical($exception->getMessage(), [
+                'exceptionId' => $exceptionId,
+                'exception' => $exception,
+                'context' => $this->getExceptionContext($exception),
+            ]);
         }
 
         $message = [
