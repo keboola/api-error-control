@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\EventListener;
 
+use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -56,17 +57,29 @@ class ExceptionListener
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
             $code = $statusCode;
-            $this->logger->error($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
-        } elseif (is_a($exception, UserExceptionInterface::class)) {
+            $this->logger->error($exception->getMessage(), [
+                'exceptionId' => $exceptionId,
+                'exception' => $exception,
+                'context' => $this->getExceptionContext($exception),
+            ]);
+        } elseif ($exception instanceof UserExceptionInterface) {
             $statusCode = $exception->getCode() ? $exception->getCode() : Response::HTTP_BAD_REQUEST;
             $code = $exception->getCode();
-            $this->logger->error($exception->getMessage(), ['exceptionId' => $exceptionId, 'exception' => $exception]);
+            $this->logger->error($exception->getMessage(), [
+                'exceptionId' => $exceptionId,
+                'exception' => $exception,
+                'context' => $this->getExceptionContext($exception),
+            ]);
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             $code = $exception->getCode();
             $this->logger->critical(
                 $exception->getMessage(),
-                ['exceptionId' => $exceptionId, 'exception' => $exception]
+                [
+                    'exceptionId' => $exceptionId,
+                    'exception' => $exception,
+                    'context' => $this->getExceptionContext($exception),
+                ]
             );
         }
 
@@ -75,9 +88,18 @@ class ExceptionListener
             'code' => $code,
             'exceptionId' => $exceptionId,
             'status' => 'error',
+            'context' => $this->getExceptionContext($exception),
         ];
         $response = new JsonResponse($message, $statusCode, $this->getHeaders());
         $response->setEncodingOptions(0);
         $event->setResponse($response);
+    }
+
+    private function getExceptionContext(\Throwable $exception): ?array
+    {
+        if ($exception instanceof ExceptionWithContextInterface) {
+            return $exception->getContext();
+        }
+        return null;
     }
 }
