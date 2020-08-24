@@ -62,7 +62,7 @@ class ExceptionListenerTest extends TestCase
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::CRITICAL, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertEquals(null, $responseBody['context']['context']);
+        self::assertEquals(null, $record['context']['context']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
@@ -96,7 +96,7 @@ class ExceptionListenerTest extends TestCase
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertEquals(null, $responseBody['context']['context']);
+        self::assertEquals(null, $record['context']['context']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
     }
 
