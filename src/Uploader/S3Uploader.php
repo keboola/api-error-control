@@ -34,7 +34,7 @@ class S3Uploader extends AbstractUploader
             'retries' => 20,
             'region' => $this->region,
         ]);
-        $s3FileName = $this->generateFilename();
+        $s3FileName = $this->generateFilename($contentType);
         $s3client->putObject([
             'Bucket' => $this->s3bucket,
             'Key' => $this->path . '/' . $s3FileName,
