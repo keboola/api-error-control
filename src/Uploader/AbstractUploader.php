@@ -22,16 +22,22 @@ abstract class AbstractUploader
     protected $storageApiUrl;
 
     protected function generateFilename(
-        string $contentType = 'text/html'
+        string $contentType = 'text/html',
+        ?string $originalFilePath = null
     ): string {
-        switch ($contentType) {
-            case 'application/json':
-                $fileExtension = 'json';
-                break;
-            default:
-                $fileExtension = 'html';
+        if ($originalFilePath === null) {
+            switch ($contentType) {
+                case 'application/json':
+                    $fileExtension = 'json';
+                    break;
+                default:
+                    $fileExtension = 'html';
+            }
+            $fileName = uniqid() . '-log.' . $fileExtension;
+        } else {
+            $fileName = uniqid() . '-log.' . basename($originalFilePath);
         }
-        return date('Y/m/d/H/') . date('Y-m-d-H-i-s') . '-' . uniqid() . '-log.' . $fileExtension;
+        return date('Y/m/d/H/') . date('Y-m-d-H-i-s') . '-' . $fileName;
     }
 
     protected function getUrl(string $logFileName): string
