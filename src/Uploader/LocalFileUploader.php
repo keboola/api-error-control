@@ -31,4 +31,15 @@ class LocalFileUploader extends AbstractUploader
 
         return $fileName;
     }
+
+    public function uploadFile(
+        string $filePath,
+        string $contentType = 'text/html'
+    ): string {
+        $fileName = $this->localPath . '/' . $this->generateFilename($contentType);
+
+        (new Filesystem)->copy($filePath, $fileName);
+
+        return $fileName;
+    }
 }

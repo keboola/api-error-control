@@ -9,14 +9,38 @@ use PHPUnit\Framework\TestCase;
 
 class LocalFileUploaderTest extends TestCase
 {
+    /** @var string */
+    private $dir;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->dir = sys_get_temp_dir() . '/test-local-uploader';
+    }
+
     public function testUploader(): void
     {
         $uploader = new LocalFileUploader(
             'https:\\example.com',
-            __DIR__
+            $this->dir
         );
         $result = $uploader->upload('some content');
-        self::assertStringStartsWith(__DIR__, $result);
+        self::assertStringStartsWith($this->dir, $result);
+        $savedContent = file_get_contents($result);
+        self::assertEquals('some content', $savedContent);
+    }
+
+    public function testUploaderUploadFile(): void
+    {
+        $uploader = new LocalFileUploader(
+            'https:\\example.com',
+            $this->dir
+        );
+        $resultToMove = $uploader->upload('some content');
+        $result = $uploader->uploadFile($resultToMove);
+        self::assertNotEquals($resultToMove, $result);
+        self::assertStringStartsWith($this->dir, $result);
         $savedContent = file_get_contents($result);
         self::assertEquals('some content', $savedContent);
     }

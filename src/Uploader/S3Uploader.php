@@ -25,15 +25,20 @@ class S3Uploader extends AbstractUploader
         $this->region = $region;
     }
 
-    public function upload(string $content, string $contentType = 'text/html'): string
+    private function getClient(): S3Client
     {
-        /* intentionally don't create the client in ctor, it throws exceptions and these are hard to log
-            during symfony application initialization. */
-        $s3client = new S3Client([
+        return new S3Client([
             'version' => '2006-03-01',
             'retries' => 20,
             'region' => $this->region,
         ]);
+    }
+
+    public function upload(string $content, string $contentType = 'text/html'): string
+    {
+        /* intentionally don't create the client in ctor, it throws exceptions and these are hard to log
+            during symfony application initialization. */
+        $s3client = $this->getClient();
         $s3FileName = $this->generateFilename($contentType);
         $s3client->putObject([
             'Bucket' => $this->s3bucket,
@@ -43,6 +48,25 @@ class S3Uploader extends AbstractUploader
             'ServerSideEncryption' => 'AES256',
             'Body' => $content,
         ]);
+        return $this->getUrl($s3FileName);
+    }
+
+    public function uploadFile(
+        string $filePath,
+        string $contentType = 'text/html'
+    ): string {
+        $s3client = $this->getClient();
+        $s3FileName = $this->generateFilename($contentType, $filePath);
+
+        $s3client->putObject([
+            'Bucket' => $this->s3bucket,
+            'Key' => $this->path . '/' . $s3FileName,
+            'ContentType' => $contentType,
+            'ACL' => 'private',
+            'ServerSideEncryption' => 'AES256',
+            'SourceFile' => $filePath,
+        ]);
+
         return $this->getUrl($s3FileName);
     }
 }

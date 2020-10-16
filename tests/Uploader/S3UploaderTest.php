@@ -11,6 +11,8 @@ use PHPUnit\Framework\TestCase;
 
 class S3UploaderTest extends TestCase
 {
+    private const BASE_PATH = 'https:\\example.com';
+
     public function setUp(): void
     {
         parent::setUp();
@@ -21,20 +23,38 @@ class S3UploaderTest extends TestCase
 
     public function testUploader(): void
     {
-        $basePath = 'https:\\example.com';
-        $uploader = new S3Uploader(
-            $basePath,
+        $uploader = $this->getUploader();
+        $result = $uploader->upload('some content');
+        self::assertStringStartsWith(self::BASE_PATH, $result);
+        $this->assertFileInS3($result);
+    }
+
+    public function testUploadFile(): void
+    {
+        $fileToUpload = __DIR__ . '/test-up.html';
+        file_put_contents($fileToUpload, 'some content');
+        $uploader = $this->getUploader();
+        $result = $uploader->uploadFile($fileToUpload);
+        $this->assertFileInS3($result);
+    }
+
+    private function getUploader(): S3Uploader
+    {
+        return new S3Uploader(
+            self::BASE_PATH,
             (string) getenv('S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
-        $result = $uploader->upload('some content');
-        self::assertStringStartsWith($basePath, $result);
+    }
+
+    private function assertFileInS3(string $filePath): void
+    {
         $s3client = new S3Client([
             'version' => '2006-03-01',
             'retries' => 20,
             'region' => getenv('AWS_DEFAULT_REGION'),
         ]);
-        $s3Path = 'debug-files/' . substr($result, strlen($basePath) + 24);
+        $s3Path = 'debug-files/' . substr($filePath, strlen(self::BASE_PATH) + 24);
         $obj = $s3client->getObject([
             'Bucket' => getenv('S3_LOGS_BUCKET'),
             'Key' => $s3Path,
