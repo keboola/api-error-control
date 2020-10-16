@@ -6,6 +6,7 @@ namespace Keboola\ErrorControl\Tests\Uploader;
 
 use Keboola\ErrorControl\Uploader\LocalFileUploader;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 
 class LocalFileUploaderTest extends TestCase
 {
@@ -17,6 +18,8 @@ class LocalFileUploaderTest extends TestCase
         parent::setUp();
 
         $this->dir = sys_get_temp_dir() . '/test-local-uploader';
+        (new Filesystem)->remove($this->dir);
+        (new Filesystem)->mkdir($this->dir);
     }
 
     public function testUploader(): void
