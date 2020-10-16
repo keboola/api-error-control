@@ -45,4 +45,6 @@ abstract class AbstractUploader
     }
 
     abstract public function upload(string $content, string $contentType = 'text/html'): string;
+
+    abstract public function uploadFile(string $filePath, string $contentType = 'text/html'): string;
 }
