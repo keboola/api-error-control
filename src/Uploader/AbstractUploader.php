@@ -6,15 +6,18 @@ namespace Keboola\ErrorControl\Uploader;
 
 abstract class AbstractUploader
 {
-    /**
-     * @var string
-     */
-    protected $urlPrefix = '/admin/utils/logs?file=';
+    protected const DEFAULT_URL_PREFIX = '/admin/utils/logs?file=';
+    protected const DEFAULT_PATH = 'debug-files';
 
     /**
      * @var string
      */
-    protected $path = 'debug-files';
+    protected $urlPrefix;
+
+    /**
+     * @var string
+     */
+    protected $path;
 
     /**
      * @var string
@@ -45,9 +48,14 @@ abstract class AbstractUploader
         return $this->storageApiUrl . '/' . $this->urlPrefix . $logFileName;
     }
 
-    public function __construct(string $storageApiUrl)
-    {
+    public function __construct(
+        string $storageApiUrl,
+        string $path = self::DEFAULT_PATH,
+        string $urlPrefix = self::DEFAULT_URL_PREFIX
+    ) {
         $this->storageApiUrl = $storageApiUrl;
+        $this->path = $path;
+        $this->urlPrefix = $urlPrefix;
     }
 
     abstract public function upload(string $content, string $contentType = 'text/html'): string;
