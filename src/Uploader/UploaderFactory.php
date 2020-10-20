@@ -33,18 +33,25 @@ class UploaderFactory
      */
     private $absContainer;
 
+    /**
+     * @var ?string
+     */
+    private $path;
+
     public function __construct(
         string $storageApiUrl,
         ?string $s3Bucket = null,
         ?string $s3Region = null,
         ?string $absConnectionString = null,
-        ?string $absContainer = null
+        ?string $absContainer = null,
+        ?string $path = null
     ) {
         $this->storageApiUrl = $storageApiUrl;
         $this->s3Bucket = $s3Bucket;
         $this->s3Region = $s3Region;
         $this->absConnectionString = $absConnectionString;
         $this->absContainer = $absContainer;
+        $this->path = $path;
     }
 
     public function getUploader(): AbstractUploader
@@ -53,14 +60,17 @@ class UploaderFactory
             return new S3Uploader($this->storageApiUrl, $this->s3Bucket, $this->s3Region);
         } elseif (!empty($this->absConnectionString) && !empty($this->absContainer)) {
             return new AbsUploader($this->storageApiUrl, $this->absConnectionString, $this->absContainer);
+        } elseif (!empty($this->path)) {
+            return new LocalFileUploader($this->storageApiUrl, $this->path);
         } else {
             throw new RuntimeException(sprintf(
                 'No uploader can be configured: s3Bucket: "%s", s3Region: "%s", ' .
-                'absConnectionString: "%s", absContainer: "%s".',
+                'absConnectionString: "%s", absContainer: "%s", path: "%s".',
                 var_export($this->s3Bucket, true),
                 var_export($this->s3Region, true),
                 var_export($this->absConnectionString, true),
-                var_export($this->absContainer, true)
+                var_export($this->absContainer, true),
+                var_export($this->path, true)
             ));
         }
     }

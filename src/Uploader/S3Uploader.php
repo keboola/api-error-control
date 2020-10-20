@@ -25,7 +25,7 @@ class S3Uploader extends AbstractUploader
         $this->region = $region;
     }
 
-    public function upload(string $content): string
+    public function upload(string $content, string $contentType = 'text/html'): string
     {
         /* intentionally don't create the client in ctor, it throws exceptions and these are hard to log
             during symfony application initialization. */
@@ -34,11 +34,11 @@ class S3Uploader extends AbstractUploader
             'retries' => 20,
             'region' => $this->region,
         ]);
-        $s3FileName = $this->generateFilename();
+        $s3FileName = $this->generateFilename($contentType);
         $s3client->putObject([
             'Bucket' => $this->s3bucket,
             'Key' => $this->path . '/' . $s3FileName,
-            'ContentType' => 'text/html',
+            'ContentType' => $contentType,
             'ACL' => 'private',
             'ServerSideEncryption' => 'AES256',
             'Body' => $content,

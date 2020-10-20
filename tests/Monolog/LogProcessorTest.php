@@ -95,7 +95,7 @@ class LogProcessorTest extends TestCase
         self::assertEquals(
             [
                 'uploaderError' => 'No uploader can be configured: s3Bucket: "\'\'", s3Region: "NULL", ' .
-                    'absConnectionString: "NULL", absContainer: "NULL".',
+                    'absConnectionString: "NULL", absContainer: "NULL", path: "NULL".',
                 'exceptionId' => '12345',
                 'exception' => [
                     'message' => 'exception message',

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Tests\Uploader;
 
 use Keboola\ErrorControl\Uploader\AbsUploader;
+use Keboola\ErrorControl\Uploader\LocalFileUploader;
 use Keboola\ErrorControl\Uploader\S3Uploader;
 use Keboola\ErrorControl\Uploader\UploaderFactory;
 use PHPUnit\Framework\TestCase;
@@ -34,12 +35,25 @@ class UploaderFactoryTest extends TestCase
         self::assertInstanceOf(AbsUploader::class, $factory->getUploader());
     }
 
+    public function testGetLocalFileUploader(): void
+    {
+        $factory = new UploaderFactory(
+            'https:\\example.com',
+            '',
+            '',
+            '',
+            '',
+            '/home/keboola'
+        );
+        self::assertInstanceOf(LocalFileUploader::class, $factory->getUploader());
+    }
+
     public function testInvalid(): void
     {
         $factory = new UploaderFactory('https:\\example.com');
         self::expectException(RuntimeException::class);
         self::expectExceptionMessage('No uploader can be configured: s3Bucket: "NULL", s3Region: "NULL", ' .
-            'absConnectionString: "NULL", absContainer: "NULL"');
+            'absConnectionString: "NULL", absContainer: "NULL", path: "NULL"');
         $factory->getUploader();
     }
 }
