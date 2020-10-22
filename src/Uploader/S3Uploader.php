@@ -18,9 +18,14 @@ class S3Uploader extends AbstractUploader
      */
     private $region;
 
-    public function __construct(string $storageApiUrl, string $s3bucket, string $region)
-    {
-        parent::__construct($storageApiUrl);
+    public function __construct(
+        string $storageApiUrl,
+        string $s3bucket,
+        string $region,
+        string $path = self::DEFAULT_PATH,
+        string $urlPrefix = self::DEFAULT_URL_PREFIX
+    ) {
+        parent::__construct($storageApiUrl, $path, $urlPrefix);
         $this->s3bucket = $s3bucket;
         $this->region = $region;
     }

@@ -19,9 +19,14 @@ class AbsUploader extends AbstractUploader
      */
     private $absContainer;
 
-    public function __construct(string $storageApiUrl, string $absConnectionString, string $absContainer)
-    {
-        parent::__construct($storageApiUrl);
+    public function __construct(
+        string $storageApiUrl,
+        string $absConnectionString,
+        string $absContainer,
+        string $path = self::DEFAULT_PATH,
+        string $urlPrefix = self::DEFAULT_URL_PREFIX
+    ) {
+        parent::__construct($storageApiUrl, $path, $urlPrefix);
         $this->absConnectionString = $absConnectionString;
         $this->absContainer = $absContainer;
     }

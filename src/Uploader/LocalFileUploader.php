@@ -13,9 +13,13 @@ class LocalFileUploader extends AbstractUploader
      */
     private $localPath;
 
-    public function __construct(string $storageApiUrl, string $localPath)
-    {
-        parent::__construct($storageApiUrl);
+    public function __construct(
+        string $storageApiUrl,
+        string $localPath,
+        string $path = self::DEFAULT_PATH,
+        string $urlPrefix = self::DEFAULT_URL_PREFIX
+    ) {
+        parent::__construct($storageApiUrl, $path, $urlPrefix);
         $this->localPath = $localPath;
     }
 
