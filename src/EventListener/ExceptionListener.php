@@ -35,7 +35,7 @@ class ExceptionListener
     public function onKernelException(ExceptionEvent $event): void
     {
         $message = ExceptionTransformer::transformException($this->logger, $event->getThrowable());
-        $response = new JsonResponse($message->getMessage(), $message->getStatusCode(), $this->getHeaders());
+        $response = new JsonResponse($message->getArray(), $message->getStatusCode(), $this->getHeaders());
         $response->setEncodingOptions(0);
         $event->setResponse($response);
     }

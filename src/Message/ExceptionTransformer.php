@@ -67,6 +67,7 @@ class ExceptionTransformer
         return new ExceptionMessage(
             self::getExceptionMessage($exception),
             $code,
+            $exception,
             $exceptionId,
             $statusCode,
             self::getExceptionContext($exception)
