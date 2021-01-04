@@ -3,3 +3,4 @@
 /composer.lock
 /.env
 /build/logs
+/.phpunit.result.cache

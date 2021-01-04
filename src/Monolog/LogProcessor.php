@@ -7,6 +7,7 @@ namespace Keboola\ErrorControl\Monolog;
 use Exception;
 use Keboola\ErrorControl\Uploader\AbstractUploader;
 use Keboola\ErrorControl\Uploader\UploaderFactory;
+use Monolog\DateTimeImmutable;
 use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
 use Throwable;
 
@@ -59,11 +60,14 @@ class LogProcessor
         $newRecord = [
             'message' => $record['message'],
             'level' => $record['level'],
+            'level_name' => $record['level_name'],
+            'context' => [],
+            'channel' => $record['channel'] ?? '',
+            'datetime' => $record['datetime'] ?? new DateTimeImmutable(true),
+            'extra' => [],
             'app' => $this->appName,
             'pid' => getmypid(),
             'priority' => $record['level_name'],
-            'context' => [],
-            'extra' => [],
         ];
         $newRecord = $this->addLogInfo($newRecord);
         if (!empty($record['context']['exceptionId'])) {
