@@ -36,11 +36,19 @@ class ExceptionMessage
         return $this->statusCode;
     }
 
-    public function getArray(): array
+    public function getSafeArray(): array
+    {
+        $data = $this->getFullArray();
+        unset($data['exception']);
+        return $data;
+    }
+
+    public function getFullArray(): array
     {
         return [
             'error' => $this->error,
             'code' => $this->code,
+            'exception' => $this->exception,
             'exceptionId' => $this->exceptionId,
             'status' => 'error',
             'context' => $this->context,
