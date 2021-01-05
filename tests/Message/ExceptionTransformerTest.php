@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Keboola\ErrorControl\Tests\Message;
 
 use Keboola\CommonExceptions\ExceptionWithContextInterface;
