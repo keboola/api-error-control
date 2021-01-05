@@ -31,11 +31,6 @@ class ExceptionMessage
         $this->context = $context;
     }
 
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
-    }
-
     public function getSafeArray(): array
     {
         $data = $this->getFullArray();
@@ -53,5 +48,35 @@ class ExceptionMessage
             'status' => 'error',
             'context' => $this->context,
         ];
+    }
+
+    public function getError(): string
+    {
+        return $this->error;
+    }
+
+    public function getCode(): int
+    {
+        return $this->code;
+    }
+
+    public function getException(): Throwable
+    {
+        return $this->exception;
+    }
+
+    public function getExceptionId(): string
+    {
+        return $this->exceptionId;
+    }
+
+    public function getContext(): array
+    {
+        return $this->context;
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
     }
 }

@@ -6,7 +6,6 @@ namespace Keboola\ErrorControl\Message;
 
 use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -35,33 +34,18 @@ class ExceptionTransformer
         return [];
     }
 
-    public static function transformException(LoggerInterface $logger, Throwable $exception): ExceptionMessage
+    public static function transformException(Throwable $exception): ExceptionMessage
     {
         $exceptionId = self::getExceptionId();
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
             $code = $statusCode;
-            $logger->error($exception->getMessage(), [
-                'exceptionId' => $exceptionId,
-                'exception' => $exception,
-                'context' => self::getExceptionContext($exception),
-            ]);
         } elseif ($exception instanceof UserExceptionInterface) {
             $statusCode = $exception->getCode() ? $exception->getCode() : Response::HTTP_BAD_REQUEST;
             $code = $exception->getCode();
-            $logger->error($exception->getMessage(), [
-                'exceptionId' => $exceptionId,
-                'exception' => $exception,
-                'context' => self::getExceptionContext($exception),
-            ]);
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             $code = $exception->getCode();
-            $logger->critical($exception->getMessage(), [
-                'exceptionId' => $exceptionId,
-                'exception' => $exception,
-                'context' => self::getExceptionContext($exception),
-            ]);
         }
 
         return new ExceptionMessage(
