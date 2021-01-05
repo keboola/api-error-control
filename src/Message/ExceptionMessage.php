@@ -21,8 +21,14 @@ class ExceptionMessage
     /** @var array */
     private $context;
 
-    public function __construct(string $error, int $code, Throwable $exception, string $exceptionId, int $statusCode, array $context)
-    {
+    public function __construct(
+        string $error,
+        int $code,
+        Throwable $exception,
+        string $exceptionId,
+        int $statusCode,
+        array $context
+    ) {
         $this->error = $error;
         $this->code = $code;
         $this->exception = $exception;
