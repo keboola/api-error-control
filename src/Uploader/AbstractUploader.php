@@ -39,7 +39,7 @@ abstract class AbstractUploader
 
     protected function getUrl(string $logFileName): string
     {
-        return $this->storageApiUrl . '/' . $this->urlPrefix . $logFileName;
+        return rtrim($this->storageApiUrl, '/') . $this->urlPrefix . $logFileName;
     }
 
     public function __construct(

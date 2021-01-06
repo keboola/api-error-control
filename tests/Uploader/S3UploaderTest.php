@@ -21,7 +21,7 @@ class S3UploaderTest extends TestCase
 
     public function testUploader(): void
     {
-        $basePath = 'https:\\example.com';
+        $basePath = 'https://example.com';
         $uploader = new S3Uploader(
             $basePath,
             (string) getenv('S3_LOGS_BUCKET'),
@@ -34,7 +34,8 @@ class S3UploaderTest extends TestCase
             'retries' => 20,
             'region' => getenv('AWS_DEFAULT_REGION'),
         ]);
-        $s3Path = 'debug-files/' . substr($result, strlen($basePath) + 24);
+        preg_match('#file=(.*)$#', $result, $matches);
+        $s3Path = 'debug-files/' . $matches[1];
         $obj = $s3client->getObject([
             'Bucket' => getenv('S3_LOGS_BUCKET'),
             'Key' => $s3Path,
