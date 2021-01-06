@@ -21,14 +21,14 @@ class AbsUploaderTest extends TestCase
 
     public function testUploader(): void
     {
-        $basePath = 'https:\\\\example.com';
+        $basePath = 'https://example.com/';
         $uploader = new AbsUploader(
             $basePath,
             (string) getenv('ABS_CONNECTION_STRING'),
             (string) getenv('ABS_CONTAINER')
         );
         $returnUrl = $uploader->upload('some content');
-        self::assertStringStartsWith($basePath, $returnUrl);
+        self::assertStringStartsWith('https://example.com/admin/utils/logs', $returnUrl);
         preg_match('#\?file=(.*)#', $returnUrl, $matches);
         $blobClient = BlobRestProxy::createBlobService((string) getenv('ABS_CONNECTION_STRING'));
         $blob = $blobClient->getBlob((string) getenv('ABS_CONTAINER'), $matches[1]);
