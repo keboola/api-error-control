@@ -39,7 +39,7 @@ class S3Uploader extends AbstractUploader
             'Bucket' => $this->s3bucket,
             'Key' => $this->path . '/' . $s3FileName,
             'ContentType' => $contentType,
-            'ACL' => 'private',
+            'ACL' => 'bucket-owner-full-control',
             'ServerSideEncryption' => 'AES256',
             'Body' => $content,
         ]);
