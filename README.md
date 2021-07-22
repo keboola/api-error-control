@@ -52,16 +52,19 @@ $logProcessor->setLogInfo(new LogInfo(...));
 ```
 
 ## Development
+### AWS resources
 Use the provided `test-cf-stack.json` to create a CloudFormation stack. Use the outputs to set environment variables
 `AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`. Create an access key for the generated user. Set it to the environment 
 variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+
+### Azure resources
 Use the provided `test-arm-template.json` to create ARM stack:
 
     az group create --name testing-api-error-control --location "East US"
 
     az deployment group create --resource-group testing-api-error-control --template-file test-arm-template.json --parameters storage_account_name=testingapierrorcontrol container_name=test-container
 
-Go to the [Azure Portal](https://portal.azure.com/) - Storage Account - Access Keys and copy connection string. 
+Go to the [Azure Portal](https://portal.azure.com/) > Storage Account > testingapierrorcontrol > Access Keys and copy connection string. 
 Go to Storage Account - Lifecycle Management - and set a cleanup rule to remove files older than 1 day from the container.
 Set  `ABS_CONNECTION_STRING` and `ABS_CONTAINER`. Run tests with `composer ci`. 
 
@@ -93,4 +96,3 @@ services:
 
 In case you were using `S3Uploader` directly somewhere, you have to replace the occurrences with `UploaderFactory` 
 and call `getUploader()` method to actually get an uploader.
-  
