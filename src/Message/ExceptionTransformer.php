@@ -22,7 +22,7 @@ class ExceptionTransformer
         return 'Internal Server Error occurred.';
     }
 
-    private static function getExceptionContext(\Throwable $exception): array
+    private static function getExceptionContext(Throwable $exception): array
     {
         if ($exception instanceof ExceptionWithContextInterface) {
             return $exception->getContext();

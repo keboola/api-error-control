@@ -13,12 +13,14 @@ use PHPStan\Analyser\TypeSpecifier;
 use PHPStan\Analyser\TypeSpecifierAwareExtension;
 use PHPStan\Analyser\TypeSpecifierContext;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Type\TypeCombinator;
+use PHPUnit\Framework\Assert;
 
 class AssertNotNullTypeSpecifyingExtension implements TypeSpecifierAwareExtension
 {
     public function getClass(): string
     {
-        return \PHPUnit\Framework\Assert::class;
+        return Assert::class;
     }
 
     public function isStaticMethodSupported(
@@ -37,7 +39,7 @@ class AssertNotNullTypeSpecifyingExtension implements TypeSpecifierAwareExtensio
         TypeSpecifierContext $context
     ): SpecifiedTypes {
         $arg = $node->args[0]->value;
-        $newType = (\PHPStan\Type\TypeCombinator::removeNull($scope->getType($arg)));
+        $newType = (TypeCombinator::removeNull($scope->getType($arg)));
         $printer = new Standard();
         return new SpecifiedTypes([$printer->prettyPrintExpr($arg) => [$arg, $newType]], []);
     }

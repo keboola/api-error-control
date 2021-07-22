@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\Message;
 
+use Exception;
 use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
 use Keboola\ErrorControl\Message\ExceptionTransformer;
@@ -14,7 +15,7 @@ class ExceptionTransformerTest extends TestCase
 {
     public function testTransform(): void
     {
-        $ex = new \Exception('test');
+        $ex = new Exception('test');
         $message = ExceptionTransformer::transformException($ex)->getFullArray();
         self::assertStringContainsString('exception-', $message['exceptionId']);
         unset($message['exceptionId']);
@@ -32,7 +33,7 @@ class ExceptionTransformerTest extends TestCase
 
     public function testTransformUserException(): void
     {
-        $ex = new class('test') extends \Exception implements UserExceptionInterface {
+        $ex = new class('test') extends Exception implements UserExceptionInterface {
         };
         $message = ExceptionTransformer::transformException($ex)->getFullArray();
         self::assertStringContainsString('exception-', $message['exceptionId']);
@@ -52,7 +53,7 @@ class ExceptionTransformerTest extends TestCase
 
     public function testTransformHttpException(): void
     {
-        $ex = new class('test') extends \Exception implements HttpExceptionInterface {
+        $ex = new class('test') extends Exception implements HttpExceptionInterface {
             public function getStatusCode(): int
             {
                 return 123;
@@ -81,7 +82,7 @@ class ExceptionTransformerTest extends TestCase
 
     public function testTransformContextException(): void
     {
-        $ex = new class('test') extends \Exception implements ExceptionWithContextInterface {
+        $ex = new class('test') extends Exception implements ExceptionWithContextInterface {
             public function getContext(): array
             {
                 return ['bar' => 'Kochba'];
