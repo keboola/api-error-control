@@ -64,6 +64,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
+        self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
 
     public function testHandleUserExceptionInterface(): void
@@ -98,6 +99,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
+        self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
 
     public function exceptionsWithContextProvider(): \Generator
@@ -202,6 +204,7 @@ class ExceptionListenerTest extends TestCase
             ],
         ], $record['context']['context']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
+        self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
 
     public function testHandleUserExceptionZero(): void
@@ -238,6 +241,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
+        self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
 
     public function testHandleHttpException(): void
@@ -271,6 +275,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
+        self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
 
     public function testExceptionEncoding(): void

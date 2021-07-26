@@ -6,6 +6,7 @@ namespace Keboola\ErrorControl\Message;
 
 use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
+use Keboola\ErrorControl\ExceptionIdGenerator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -21,11 +22,6 @@ class ExceptionTransformer
         return 'Internal Server Error occurred.';
     }
 
-    private static function getExceptionId(): string
-    {
-        return 'exception-' . md5(microtime());
-    }
-
     private static function getExceptionContext(\Throwable $exception): array
     {
         if ($exception instanceof ExceptionWithContextInterface) {
@@ -36,12 +32,11 @@ class ExceptionTransformer
 
     public static function transformException(Throwable $exception): ExceptionMessage
     {
-        $exceptionId = self::getExceptionId();
         if ($exception instanceof HttpExceptionInterface) {
             $statusCode = $exception->getStatusCode();
             $code = $statusCode;
         } elseif ($exception instanceof UserExceptionInterface) {
-            $statusCode = $exception->getCode() ? $exception->getCode() : Response::HTTP_BAD_REQUEST;
+            $statusCode = $exception->getCode() ?: Response::HTTP_BAD_REQUEST;
             $code = $exception->getCode();
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
@@ -52,7 +47,7 @@ class ExceptionTransformer
             self::getExceptionMessage($exception),
             $code,
             $exception,
-            $exceptionId,
+            ExceptionIdGenerator::generateId(),
             $statusCode,
             self::getExceptionContext($exception)
         );
