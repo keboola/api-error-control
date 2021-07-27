@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
+        "php": "^7.1|^8.0",
         "ext-json": "*",
         "aws/aws-sdk-php": "^3.138",
         "keboola/common-exceptions": "^1.0",
@@ -21,8 +21,8 @@
         "symfony/http-kernel": "^4.3|^5.0"
     },
     "require-dev": {
+        "keboola/coding-standard": "^13.0",
         "php-parallel-lint/php-parallel-lint": "^1.0",
-        "keboola/coding-standard": "^9.0",
         "phpstan/phpstan": "^0.12",
         "phpunit/phpunit": "^8.0|^9.0"
     },
@@ -55,6 +55,7 @@
     },
     "config": {
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "lock": false
     }
 }

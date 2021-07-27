@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Tests\Uploader;
 
 use Aws\S3\S3Client;
+use Exception;
 use GuzzleHttp\Psr7\Stream;
 use Keboola\ErrorControl\Uploader\S3Uploader;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +16,7 @@ class S3UploaderTest extends TestCase
     {
         parent::setUp();
         if (empty(getenv('S3_LOGS_BUCKET')) || empty(getenv('AWS_DEFAULT_REGION'))) {
-            throw new \Exception('Environment variable S3_LOGS_BUCKET or AWS_DEFAULT_REGION is empty.');
+            throw new Exception('Environment variable S3_LOGS_BUCKET or AWS_DEFAULT_REGION is empty.');
         }
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\Message;
 
+use Exception;
 use Keboola\ErrorControl\Message\ExceptionMessage;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +12,7 @@ class ExceptionMessageTest extends TestCase
 {
     public function testAccessors(): void
     {
-        $ex = new \Exception('test');
+        $ex = new Exception('test');
         $message = new ExceptionMessage('foo', 123, $ex, 'abc123', 300, ['foo' => 'bar']);
         self::assertEquals('foo', $message->getError());
         self::assertEquals(123, $message->getCode());

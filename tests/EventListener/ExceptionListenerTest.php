@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Tests\EventListener;
 
 use Exception;
+use Generator;
 use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
 use Keboola\ErrorControl\EventListener\ExceptionListener;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Throwable;
 
 class ExceptionListenerTest extends TestCase
 {
@@ -102,7 +104,7 @@ class ExceptionListenerTest extends TestCase
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
 
-    public function exceptionsWithContextProvider(): \Generator
+    public function exceptionsWithContextProvider(): Generator
     {
         yield 'UserException' => [
             'exception' => new class ('exception', 421) extends Exception implements
@@ -162,7 +164,7 @@ class ExceptionListenerTest extends TestCase
      * @dataProvider exceptionsWithContextProvider
      */
     public function testHandleExceptionWithContext(
-        \Throwable $exception,
+        Throwable $exception,
         int $statusCode,
         string $exceptionCode,
         string $message,

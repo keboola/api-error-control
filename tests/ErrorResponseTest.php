@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests;
 
+use Exception;
 use Keboola\ErrorControl\ErrorResponse;
 use Keboola\ErrorControl\Message\ExceptionMessage;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +17,7 @@ class ErrorResponseTest extends TestCase
         $exceptionMessage = new ExceptionMessage(
             'error message',
             123,
-            new \Exception(),
+            new Exception(),
             'exceptionId',
             456,
             []
