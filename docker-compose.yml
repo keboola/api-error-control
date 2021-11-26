@@ -1,14 +1,30 @@
-version: "2"
+version: "3.4"
 services:
-  # for development purposes
-  dev:
-    build: .
-    volumes:
-        - ./:/code
+  ci:
+    build:
+      context: .
+      target: ci
+    command: [composer, ci]
     environment:
-        - AWS_ACCESS_KEY_ID
-        - AWS_SECRET_ACCESS_KEY
-        - AWS_DEFAULT_REGION
-        - ABS_CONNECTION_STRING
-        - ABS_CONTAINER
-        - S3_LOGS_BUCKET
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
+      - ABS_CONNECTION_STRING
+      - ABS_CONTAINER
+      - S3_LOGS_BUCKET
+
+  dev:
+    build:
+      context: .
+      target: dev
+      args:
+        PHP_VERSION: 8.0
+    volumes:
+      - ./:/code
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
+      - ABS_CONNECTION_STRING
+      - ABS_CONTAINER
+      - S3_LOGS_BUCKET

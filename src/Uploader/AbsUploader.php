@@ -32,7 +32,12 @@ class AbsUploader extends AbstractUploader
         $fileName = $this->generateFilename($contentType);
         $options->setContentDisposition(sprintf('attachment; filename=%s', $fileName));
         $options->setContentType($contentType);
-        $blobClient = BlobRestProxy::createBlobService($this->absConnectionString);
+        $blobClient = BlobRestProxy::createBlobService($this->absConnectionString, [
+            'http' => [
+                'connect_timeout' => 10,
+                'timeout' => 120,
+            ],
+        ]);
         $blobClient->createBlockBlob(
             $this->absContainer,
             $fileName,
