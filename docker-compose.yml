@@ -1,5 +1,18 @@
 version: "3.4"
 services:
+  ci:
+    build:
+      context: .
+      target: ci
+    command: [composer, ci]
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
+      - ABS_CONNECTION_STRING
+      - ABS_CONTAINER
+      - S3_LOGS_BUCKET
+
   dev:
     build:
       context: .

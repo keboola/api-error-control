@@ -1,0 +1,30 @@
+pr: none
+trigger:
+  batch: true
+  branches:
+    include:
+      - '*'
+
+pool:
+  vmImage: ubuntu-latest
+
+strategy:
+  matrix:
+    'PHP 7.4':
+      PHP_VERSION: 7.4
+    'PHP 8.0':
+      PHP_VERSION: 8.0
+
+steps:
+  - script: docker-compose build --build-arg PHP_VERSION=$(PHP_VERSION) ci
+    displayName: Build Docker image
+
+  - script: docker-compose run --rm ci
+    displayName: Run Tests
+    env:
+      AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+      AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+      AWS_DEFAULT_REGION: $(AWS_DEFAULT_REGION)
+      ABS_CONNECTION_STRING: $(ABS_CONNECTION_STRING)
+      ABS_CONTAINER: $(ABS_CONTAINER)
+      S3_LOGS_BUCKET: $(S3_LOGS_BUCKET)
