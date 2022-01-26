@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Monolog;
 
-use Exception;
+use ErrorException;
 use Keboola\ErrorControl\ExceptionIdGenerator;
 use Keboola\ErrorControl\Uploader\AbstractUploader;
 use Keboola\ErrorControl\Uploader\UploaderFactory;
@@ -57,12 +57,19 @@ class LogProcessor
         if ($exception instanceof Throwable) {
             unset($context['exception']);
 
-            try {
-                $renderer = new HtmlErrorRenderer(true);
-                $renderedException = $renderer->render($exception)->getAsString();
-                $context['attachment'] = $this->getUploader()->upload($renderedException);
-            } catch (Throwable $e) {
-                $context['uploaderError'] = $e->getMessage();
+            $ignoreException =
+                $exception instanceof ErrorException &&
+                in_array($exception->getSeverity(), [E_DEPRECATED, E_USER_DEPRECATED], true)
+            ;
+
+            if (!$ignoreException) {
+                try {
+                    $renderer = new HtmlErrorRenderer(true);
+                    $renderedException = $renderer->render($exception)->getAsString();
+                    $context['attachment'] = $this->getUploader()->upload($renderedException);
+                } catch (Throwable $e) {
+                    $context['uploaderError'] = $e->getMessage();
+                }
             }
 
             $context['exceptionId'] = $context['exceptionId'] ?? ExceptionIdGenerator::generateId();

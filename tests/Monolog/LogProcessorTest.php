@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\Monolog;
 
+use ErrorException;
 use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
@@ -245,6 +246,41 @@ class LogProcessorTest extends TestCase
         self::assertEquals('CRITICAL', $newRecord['level_name']);
         self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
         self::assertEquals('', $newRecord['channel']);
+    }
+
+    public function testProcessRecordDeprecationException(): void
+    {
+        $record = [
+            'message' => 'test exception',
+            'level' => Logger::CRITICAL,
+            'level_name' => 'CRITICAL',
+            'context' => [
+                'exceptionId' => '12345',
+                'exception' => new ErrorException('exception message', 543, E_USER_DEPRECATED),
+            ],
+        ];
+
+        $uploaderFactory = new UploaderFactory('https://example.com');
+        $processor = new LogProcessor($uploaderFactory, 'test-app');
+        $newRecord = $processor->processRecord($record);
+
+        self::assertArrayNotHasKey('attachment', $newRecord['context']);
+        self::assertArrayNotHasKey('uploaderError', $newRecord['context']);
+
+        self::assertSame('test exception', $newRecord['message']);
+        self::assertSame(500, $newRecord['level']);
+        self::assertSame('test-app', $newRecord['app']);
+        self::assertGreaterThan(0, $newRecord['pid']);
+        self::assertSame('CRITICAL', $newRecord['priority']);
+        self::assertSame('12345', $newRecord['context']['exceptionId']);
+        self::assertCount(3, $newRecord['context']['exception']);
+        self::assertSame('exception message', $newRecord['context']['exception']['message']);
+        self::assertSame(543, $newRecord['context']['exception']['code']);
+        self::assertArrayHasKey('trace', $newRecord['context']['exception']);
+        self::assertSame([], $newRecord['extra']);
+        self::assertSame('CRITICAL', $newRecord['level_name']);
+        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
+        self::assertSame('', $newRecord['channel']);
     }
 
     public function testLogProcessorOnlyUsesLogInfoInterface(): void
