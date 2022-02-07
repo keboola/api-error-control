@@ -33,15 +33,9 @@ class ErrorResponseTest extends TestCase
         self::assertSame(456, $response->getStatusCode());
 
         $responseData = json_decode((string) $response->getContent(), true);
-        self::assertIsArray($responseData);
-        self::assertArrayHasKey('exceptionId', $responseData);
-        unset($responseData['exceptionId']);
-
         self::assertSame([
-            'error' => 'error message',
-            'code' => 123,
+            'message' => 'error message',
             'status' => 'error',
-            'context' => [],
         ], $responseData);
     }
 
@@ -59,15 +53,9 @@ class ErrorResponseTest extends TestCase
         self::assertSame(500, $response->getStatusCode());
 
         $responseData = json_decode((string) $response->getContent(), true);
-        self::assertIsArray($responseData);
-        self::assertArrayHasKey('exceptionId', $responseData);
-        unset($responseData['exceptionId']);
-
         self::assertSame([
-            'error' => 'Internal Server Error occurred.',
-            'code' => 123,
+            'message' => 'Internal Server Error occurred.',
             'status' => 'error',
-            'context' => [],
         ], $responseData);
     }
 }

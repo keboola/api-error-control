@@ -13,13 +13,26 @@ class ExceptionMessageTest extends TestCase
     public function testAccessors(): void
     {
         $ex = new Exception('test');
-        $message = new ExceptionMessage('foo', 123, $ex, 'abc123', 300, ['foo' => 'bar']);
+        $message = new ExceptionMessage(
+            'foo',
+            123,
+            $ex,
+            'abc123',
+            300,
+            [
+                'foo' => 'bar',
+                'errorCode' => 'validation.error',
+            ]
+        );
         self::assertEquals('foo', $message->getError());
         self::assertEquals(123, $message->getCode());
         self::assertEquals('test', $message->getException()->getMessage());
         self::assertEquals('abc123', $message->getExceptionId());
         self::assertEquals(300, $message->getStatusCode());
-        self::assertEquals(['foo' => 'bar'], $message->getContext());
+        self::assertEquals([
+            'foo' => 'bar',
+            'errorCode' => 'validation.error',
+        ], $message->getContext());
         self::assertEquals(
             [
                 'error' => 'foo',
@@ -27,17 +40,38 @@ class ExceptionMessageTest extends TestCase
                 'exception' => $ex,
                 'exceptionId' => 'abc123',
                 'status' => 'error',
-                'context' => ['foo' => 'bar'],
+                'context' => [
+                    'foo' => 'bar',
+                    'errorCode' => 'validation.error',
+                ],
             ],
             $message->getFullArray()
         );
         self::assertEquals(
             [
-                'error' => 'foo',
-                'code' => 123,
-                'exceptionId' => 'abc123',
+                'message' => 'foo',
                 'status' => 'error',
-                'context' => ['foo' => 'bar'],
+                'error' => 'validation.error',
+            ],
+            $message->getSafeArray()
+        );
+
+        // exception without string error code
+        $message = new ExceptionMessage(
+            'foo',
+            123,
+            $ex,
+            'abc123',
+            300,
+            [
+                'foo' => 'bar',
+            ]
+        );
+
+        self::assertEquals(
+            [
+                'message' => 'foo',
+                'status' => 'error',
             ],
             $message->getSafeArray()
         );

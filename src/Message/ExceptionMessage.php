@@ -39,8 +39,18 @@ class ExceptionMessage
 
     public function getSafeArray(): array
     {
-        $data = $this->getFullArray();
-        unset($data['exception']);
+        $context = $this->getContext();
+
+        $data = [
+            'message' => $this->getError(),
+            'status' => 'error',
+            'error' => $context['errorCode'] ?? '',
+        ];
+
+        if (empty($data['error'])) {
+            unset($data['error']);
+        }
+
         return $data;
     }
 
