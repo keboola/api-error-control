@@ -96,3 +96,7 @@ services:
 
 In case you were using `S3Uploader` directly somewhere, you have to replace the occurrences with `UploaderFactory` 
 and call `getUploader()` method to actually get an uploader.
+
+## License
+
+MIT licensed, see [LICENSE](./LICENSE) file.
