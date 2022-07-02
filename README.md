@@ -59,33 +59,27 @@ Prerequisites:
     * https://stedolan.github.io/jq
 * configured `az` and `aws` CLI tools (run `az login` and `aws configure --profile YOUR_AWS_PROFILE_NAME`)
 
-### AWS resources
+### AWS and Azure resources
 
 ```shell
 export NAME_PREFIX= # your name/nickname to make your resource unique & recognizable
 export AWS_PROFILE=xxxx # profile name for AWS account of your team
+export AZURE_SUBSCRIPTION_ID=xxxx # subscription id of your team
 
 cat <<EOF > ./provisioning/local/terraform.tfvars
 name_prefix = "${NAME_PREFIX}"
 aws_profile = "${AWS_PROFILE}"
+azure_subscription_id = "${AZURE_SUBSCRIPTION_ID}"
 EOF
 
 terraform -chdir=./provisioning/local init
 terraform -chdir=./provisioning/local apply
 ```
 Use the outputs to set environment variables
-`AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
-
-### Azure resources
-Use the provided `test-arm-template.json` to create ARM stack:
-
-    az group create --name testing-api-error-control --location "East US"
-
-    az deployment group create --resource-group testing-api-error-control --template-file test-arm-template.json --parameters storage_account_name=testingapierrorcontrol container_name=test-container
+`AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `ABS_CONNECTION_STRING` and `ABS_CONTAINER`.
 
 Go to the [Azure Portal](https://portal.azure.com/) > Storage Account > testingapierrorcontrol > Access Keys and copy connection string. 
 Go to Storage Account - Lifecycle Management - and set a cleanup rule to remove files older than 1 day from the container.
-Set  `ABS_CONNECTION_STRING` and `ABS_CONTAINER`. Run tests with `composer ci`. 
 
 Use `docker-compose run dev composer ci` to run tests locally.
 
