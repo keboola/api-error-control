@@ -52,10 +52,29 @@ $logProcessor->setLogInfo(new LogInfo(...));
 ```
 
 ## Development
+
+Prerequisites:
+* locally installed `terraform` and `jq`
+    * https://www.terraform.io
+    * https://stedolan.github.io/jq
+* configured `az` and `aws` CLI tools (run `az login` and `aws configure --profile YOUR_AWS_PROFILE_NAME`)
+
 ### AWS resources
-Use the provided `test-cf-stack.json` to create a CloudFormation stack. Use the outputs to set environment variables
-`AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`. Create an access key for the generated user. Set it to the environment 
-variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+
+```shell
+export NAME_PREFIX= # your name/nickname to make your resource unique & recognizable
+export AWS_PROFILE=xxxx # profile name for AWS account of your team
+
+cat <<EOF > ./provisioning/local/terraform.tfvars
+name_prefix = "${NAME_PREFIX}"
+aws_profile = "${AWS_PROFILE}"
+EOF
+
+terraform -chdir=./provisioning/local init
+terraform -chdir=./provisioning/local apply
+```
+Use the outputs to set environment variables
+`AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
 
 ### Azure resources
 Use the provided `test-arm-template.json` to create ARM stack:
