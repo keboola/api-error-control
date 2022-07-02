@@ -74,9 +74,9 @@ EOF
 
 terraform -chdir=./provisioning/local init
 terraform -chdir=./provisioning/local apply
+
+./provisioning/local/update-env.sh
 ```
-Use the outputs to set environment variables
-`AWS_DEFAULT_REGION`, `S3_LOGS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `ABS_CONNECTION_STRING` and `ABS_CONTAINER`.
 
 Go to the [Azure Portal](https://portal.azure.com/) > Storage Account > testingapierrorcontrol > Access Keys and copy connection string. 
 Go to Storage Account - Lifecycle Management - and set a cleanup rule to remove files older than 1 day from the container.
