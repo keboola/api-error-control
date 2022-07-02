@@ -41,6 +41,23 @@ output "api_error_control_abs_container" {
   value = azurerm_storage_container.api_error_control_abs_container.name
 }
 
+resource "azurerm_storage_management_policy" "api_error_control_abs_policy" {
+  storage_account_id = azurerm_storage_account.api_error_control_storage_account.id
+  rule {
+    name    = "delete-debug-files"
+    enabled = true
+    filters {
+      prefix_match = [azurerm_storage_container.api_error_control_abs_container.name]
+      blob_types   = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_modification_greater_than = 2
+      }
+    }
+  }
+}
+
 output "api_error_control_abs_connection_string" {
   value     = azurerm_storage_account.api_error_control_storage_account.primary_blob_connection_string
   sensitive = true

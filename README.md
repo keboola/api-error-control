@@ -78,9 +78,6 @@ terraform -chdir=./provisioning/local apply
 ./provisioning/local/update-env.sh
 ```
 
-Go to the [Azure Portal](https://portal.azure.com/) > Storage Account > testingapierrorcontrol > Access Keys and copy connection string. 
-Go to Storage Account - Lifecycle Management - and set a cleanup rule to remove files older than 1 day from the container.
-
 Use `docker-compose run dev composer ci` to run tests locally.
 
 ## Migration From 2.x to 3.x

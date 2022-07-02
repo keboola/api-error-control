@@ -53,6 +53,23 @@ resource "aws_iam_user_policy" "api_error_control_iam_user_policy" {
 EOT
 }
 
+resource "aws_s3_bucket_lifecycle_configuration" "api_error_control_s3_life_cycle" {
+  bucket = aws_s3_bucket.api_error_control_s3_bucket.id
+  rule {
+    id     = "Delete debug files"
+    status = "Enabled"
+
+    filter {
+      prefix = "debug-files/"
+    }
+
+    expiration {
+      days = 2
+    }
+
+  }
+}
+
 output "api_error_control_aws_region" {
   value = local.region
 }
