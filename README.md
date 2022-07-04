@@ -75,7 +75,7 @@ EOF
 terraform -chdir=./provisioning/local init
 terraform -chdir=./provisioning/local apply
 
-./provisioning/local/update-env.sh
+./provisioning/local/update-env.sh azure # or aws
 ```
 
 Use `docker-compose run dev composer ci` to run tests locally.
