@@ -15,23 +15,23 @@ variable "aws_profile" {
   }
 }
 
-resource "aws_iam_user" "api_error_control_iam_user" {
-  name          = "${var.name_prefix}-api-error-control-User"
+resource "aws_iam_user" "api_error_control" {
+  name          = "${var.name_prefix}-api-error-control-user"
   force_destroy = true
 }
 
 resource "aws_iam_access_key" "api_error_control_credentials" {
-  user = aws_iam_user.api_error_control_iam_user.id
+  user = aws_iam_user.api_error_control.id
 }
 
-resource "aws_s3_bucket" "api_error_control_s3_bucket" {
+resource "aws_s3_bucket" "api_error_control_logs_bucket" {
   force_destroy = true
   bucket        = "${var.name_prefix}-api-error-control-logs"
 }
 
-resource "aws_iam_user_policy" "api_error_control_iam_user_policy" {
+resource "aws_iam_user_policy" "api_error_control_logs_policy" {
   name = "S3Access"
-  user = aws_iam_user.api_error_control_iam_user.id
+  user = aws_iam_user.api_error_control.id
 
   policy = <<EOT
 {
@@ -45,7 +45,7 @@ resource "aws_iam_user_policy" "api_error_control_iam_user_policy" {
         ],
         "Effect": "Allow",
         "Resource": [
-          "${aws_s3_bucket.api_error_control_s3_bucket.arn}/*"
+          "${aws_s3_bucket.api_error_control_logs_bucket.arn}/*"
         ]
       }
     ]
@@ -53,8 +53,8 @@ resource "aws_iam_user_policy" "api_error_control_iam_user_policy" {
 EOT
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "api_error_control_s3_life_cycle" {
-  bucket = aws_s3_bucket.api_error_control_s3_bucket.id
+resource "aws_s3_bucket_lifecycle_configuration" "api_error_control_logs_life_cycle" {
+  bucket = aws_s3_bucket.api_error_control_logs_bucket.id
   rule {
     id     = "Delete debug files"
     status = "Enabled"
@@ -84,5 +84,5 @@ output "api_error_control_aws_secret" {
 }
 
 output "api_error_control_s3_bucket" {
-  value = aws_s3_bucket.api_error_control_s3_bucket.bucket
+  value = aws_s3_bucket.api_error_control_logs_bucket.bucket
 }
