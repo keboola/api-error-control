@@ -1,19 +1,11 @@
 provider "azurerm" {
   tenant_id       = "9b85ee6f-4fb0-4a46-8cb7-4dcc6b262a89" // Keboola
-  subscription_id = var.azure_subscription_id
+  subscription_id = "c5182964-8dca-42c8-a77a-fa2a3c6946ea" // Keboola DEV Platform Services Team
   features {}
 }
 
 locals {
   location = "West Europe"
-}
-
-variable "azure_subscription_id" {
-  type = string
-  validation {
-    condition     = length(var.azure_subscription_id) > 0
-    error_message = "The \"azure_subscription_id\" must be non-empty string."
-  }
 }
 
 resource "azurerm_resource_group" "api_error_control" {

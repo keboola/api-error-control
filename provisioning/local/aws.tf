@@ -1,6 +1,6 @@
 provider "aws" {
   region  = local.region
-  profile = var.aws_profile
+  profile = "Keboola-Dev-Platform-Services-AWSAdministratorAccess"
 
   default_tags {
     tags = {
@@ -10,16 +10,10 @@ provider "aws" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 locals {
   region = "eu-central-1"
-}
-
-variable "aws_profile" {
-  type = string
-  validation {
-    condition     = length(var.aws_profile) > 0
-    error_message = "The \"aws_profile\" must be non-empty string."
-  }
 }
 
 resource "aws_iam_user" "api_error_control" {
