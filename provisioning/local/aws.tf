@@ -77,19 +77,19 @@ resource "aws_s3_bucket_lifecycle_configuration" "api_error_control_logs_life_cy
   }
 }
 
-output "api_error_control_aws_region" {
+output "aws_default_region" {
   value = local.region
 }
 
-output "api_error_control_aws_key" {
+output "aws_access_key_id" {
   value = aws_iam_access_key.api_error_control_credentials.id
 }
 
-output "api_error_control_aws_secret" {
+output "aws_secret_access_key" {
   value     = aws_iam_access_key.api_error_control_credentials.secret
   sensitive = true
 }
 
-output "api_error_control_s3_bucket" {
+output "s3_logs_bucket" {
   value = aws_s3_bucket.api_error_control_logs_bucket.bucket
 }
