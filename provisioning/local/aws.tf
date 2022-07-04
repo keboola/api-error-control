@@ -1,6 +1,13 @@
 provider "aws" {
   region  = local.region
   profile = var.aws_profile
+
+  default_tags {
+    tags = {
+      KebolaStack = "${var.name_prefix}-api-error-control"
+      KeboolaRole = "api-error-control"
+    }
+  }
 }
 
 locals {
