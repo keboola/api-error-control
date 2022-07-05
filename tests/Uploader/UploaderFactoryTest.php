@@ -17,7 +17,7 @@ class UploaderFactoryTest extends TestCase
     {
         $factory = new UploaderFactory(
             'https:\\example.com',
-            (string) getenv('S3_LOGS_BUCKET'),
+            (string) getenv('AWS_S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
         self::assertInstanceOf(S3Uploader::class, $factory->getUploader());
@@ -29,8 +29,8 @@ class UploaderFactoryTest extends TestCase
             'https:\\example.com',
             '',
             '',
-            (string) getenv('ABS_CONNECTION_STRING'),
-            (string) getenv('ABS_CONTAINER')
+            (string) getenv('AZURE_ABS_CONNECTION_STRING'),
+            (string) getenv('AZURE_ABS_CONTAINER')
         );
         self::assertInstanceOf(AbsUploader::class, $factory->getUploader());
     }

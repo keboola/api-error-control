@@ -15,8 +15,8 @@ class S3UploaderTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        if (empty(getenv('S3_LOGS_BUCKET')) || empty(getenv('AWS_DEFAULT_REGION'))) {
-            throw new Exception('Environment variable S3_LOGS_BUCKET or AWS_DEFAULT_REGION is empty.');
+        if (empty(getenv('AWS_S3_LOGS_BUCKET')) || empty(getenv('AWS_DEFAULT_REGION'))) {
+            throw new Exception('Environment variable AWS_S3_LOGS_BUCKET or AWS_DEFAULT_REGION is empty.');
         }
     }
 
@@ -25,7 +25,7 @@ class S3UploaderTest extends TestCase
         $basePath = 'https://example.com';
         $uploader = new S3Uploader(
             $basePath,
-            (string) getenv('S3_LOGS_BUCKET'),
+            (string) getenv('AWS_S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
         $result = $uploader->upload('some content');
@@ -38,7 +38,7 @@ class S3UploaderTest extends TestCase
         preg_match('#file=(.*)$#', $result, $matches);
         $s3Path = 'debug-files/' . $matches[1];
         $obj = $s3client->getObject([
-            'Bucket' => getenv('S3_LOGS_BUCKET'),
+            'Bucket' => getenv('AWS_S3_LOGS_BUCKET'),
             'Key' => $s3Path,
         ])->toArray();
         self::assertEquals('text/html', $obj['ContentType']);
@@ -47,7 +47,7 @@ class S3UploaderTest extends TestCase
         $body = $obj['Body'];
         self::assertEquals('some content', $body->read((int) $body->getSize()));
         $s3client->deleteObject([
-            'Bucket' => getenv('S3_LOGS_BUCKET'),
+            'Bucket' => getenv('AWS_S3_LOGS_BUCKET'),
             'Key' => $s3Path,
         ]);
     }
