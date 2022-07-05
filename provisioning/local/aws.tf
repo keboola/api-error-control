@@ -1,6 +1,7 @@
 provider "aws" {
-  region  = local.region
-  profile = "Keboola-Dev-Platform-Services-AWSAdministratorAccess"
+  region              = local.region
+  profile             = "Keboola-Dev-Platform-Services-AWSAdministratorAccess"
+  allowed_account_ids = ["025303414634"]
 
   default_tags {
     tags = {
