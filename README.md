@@ -63,13 +63,9 @@ Prerequisites:
 
 ```shell
 export NAME_PREFIX= # your name/nickname to make your resource unique & recognizable
-export AWS_PROFILE=xxxx # profile name for AWS account of your team
-export AZURE_SUBSCRIPTION_ID=xxxx # subscription id of your team
 
 cat <<EOF > ./provisioning/local/terraform.tfvars
 name_prefix = "${NAME_PREFIX}"
-aws_profile = "${AWS_PROFILE}"
-azure_subscription_id = "${AZURE_SUBSCRIPTION_ID}"
 EOF
 
 terraform -chdir=./provisioning/local init

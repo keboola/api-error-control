@@ -46,11 +46,11 @@ resource "azurerm_storage_management_policy" "api_error_control_logs_policy" {
   }
 }
 
-output "abs_connection_string" {
+output "azure_abs_connection_string" {
   value     = azurerm_storage_account.api_error_control_storage_account.primary_blob_connection_string
   sensitive = true
 }
 
-output "abs_container" {
+output "azure_abs_container" {
   value = azurerm_storage_container.api_error_control_logs_container.name
 }

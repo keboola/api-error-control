@@ -84,6 +84,6 @@ output "aws_secret_access_key" {
   sensitive = true
 }
 
-output "s3_logs_bucket" {
+output "aws_s3_logs_bucket" {
   value = aws_s3_bucket.api_error_control_logs_bucket.bucket
 }
