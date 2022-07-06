@@ -20,8 +20,8 @@ class LogProcessorTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        if (empty(getenv('S3_LOGS_BUCKET')) || empty(getenv('AWS_DEFAULT_REGION'))) {
-            throw new Exception('Environment variable S3_LOGS_BUCKET or AWS_DEFAULT_REGION is empty.');
+        if (empty(getenv('AWS_S3_LOGS_BUCKET')) || empty(getenv('AWS_DEFAULT_REGION'))) {
+            throw new Exception('Environment variable AWS_S3_LOGS_BUCKET or AWS_DEFAULT_REGION is empty.');
         }
     }
 
@@ -35,7 +35,7 @@ class LogProcessorTest extends TestCase
 
         $uploaderFactory = new UploaderFactory(
             'https://example.com',
-            (string) getenv('S3_LOGS_BUCKET'),
+            (string) getenv('AWS_S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
         $processor = new LogProcessor($uploaderFactory, 'test-app');
@@ -130,7 +130,7 @@ class LogProcessorTest extends TestCase
 
         $uploaderFactory = new UploaderFactory(
             'https://example.com',
-            (string) getenv('S3_LOGS_BUCKET'),
+            (string) getenv('AWS_S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
         $processor = new LogProcessor($uploaderFactory, 'test-app');
@@ -186,7 +186,7 @@ class LogProcessorTest extends TestCase
 
         $uploaderFactory = new UploaderFactory(
             'https://example.com',
-            (string) getenv('S3_LOGS_BUCKET'),
+            (string) getenv('AWS_S3_LOGS_BUCKET'),
             (string) getenv('AWS_DEFAULT_REGION')
         );
         $processor = new LogProcessor($uploaderFactory, 'test-app');
