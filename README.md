@@ -68,7 +68,7 @@ cat <<EOF > ./provisioning/local/terraform.tfvars
 name_prefix = "${NAME_PREFIX}"
 EOF
 
-terraform -chdir=./provisioning/local init
+terraform -chdir=./provisioning/local init -backend-config="key=api-error-control/${NAME_PREFIX}.tfstate"
 terraform -chdir=./provisioning/local apply
 
 ./provisioning/local/update-env.sh azure # or aws
