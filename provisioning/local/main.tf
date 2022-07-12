@@ -11,7 +11,6 @@ terraform {
   }
 
   backend "s3" {
-    profile        = "Keboola-Dev-Platform-Services-AWSAdministratorAccess"
     role_arn       = "arn:aws:iam::681277395786:role/kbc-local-dev-terraform"
     region         = "eu-central-1"
     bucket         = "local-dev-terraform-bucket"
