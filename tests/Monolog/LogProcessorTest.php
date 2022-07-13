@@ -9,11 +9,13 @@ use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
+use Keboola\ErrorControl\Uploader\AbstractUploader;
 use Keboola\ErrorControl\Uploader\UploaderFactory;
 use Monolog\DateTimeImmutable;
 use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class LogProcessorTest extends TestCase
 {
@@ -89,7 +91,15 @@ class LogProcessorTest extends TestCase
             ],
         ];
 
-        $uploaderFactory = new UploaderFactory('https://example.com', '', null);
+        $uploaderFactory = $this->createMock(UploaderFactory::class);
+        $uploaderFactory->method('getUploader')->willReturn(new class ('') extends AbstractUploader
+        {
+            public function upload(string $content, string $contentType = 'text/html'): string
+            {
+                throw new RuntimeException('Error upload failed');
+            }
+        });
+
         $processor = new LogProcessor($uploaderFactory, 'test-app');
         $newRecord = $processor->processRecord($record);
         self::assertCount(10, $newRecord);
@@ -102,8 +112,7 @@ class LogProcessorTest extends TestCase
         unset($newRecord['context']['exception']['trace']); // doesn't make sense to test
         self::assertEquals(
             [
-                'uploaderError' => 'No uploader can be configured: s3Bucket: "\'\'", s3Region: "NULL", ' .
-                    'absConnectionString: "NULL", absContainer: "NULL", path: "NULL".',
+                'uploaderError' => 'Error upload failed',
                 'exceptionId' => '12345',
                 'exception' => [
                     'message' => 'exception message',

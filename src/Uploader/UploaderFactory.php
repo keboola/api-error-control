@@ -4,38 +4,24 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Uploader;
 
-use RuntimeException;
-
 class UploaderFactory
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $storageApiUrl;
 
-    /**
-     * @var ?string
-     */
+    /** @var ?string */
     private $s3Bucket;
 
-    /**
-     * @var ?string
-     */
+    /** @var ?string */
     private $s3Region;
 
-    /**
-     * @var ?string
-     */
+    /** @var ?string */
     private $absConnectionString;
 
-    /**
-     * @var ?string
-     */
+    /** @var ?string */
     private $absContainer;
 
-    /**
-     * @var ?string
-     */
+    /** @var ?string */
     private $path;
 
     public function __construct(
@@ -54,7 +40,7 @@ class UploaderFactory
         $this->path = $path;
     }
 
-    public function getUploader(): AbstractUploader
+    public function getUploader(): ?AbstractUploader
     {
         if (!empty($this->s3Bucket) && !empty($this->s3Region)) {
             return new S3Uploader($this->storageApiUrl, $this->s3Bucket, $this->s3Region);
@@ -63,15 +49,7 @@ class UploaderFactory
         } elseif (!empty($this->path)) {
             return new LocalFileUploader($this->storageApiUrl, $this->path);
         } else {
-            throw new RuntimeException(sprintf(
-                'No uploader can be configured: s3Bucket: "%s", s3Region: "%s", ' .
-                'absConnectionString: "%s", absContainer: "%s", path: "%s".',
-                var_export($this->s3Bucket, true),
-                var_export($this->s3Region, true),
-                var_export($this->absConnectionString, true),
-                var_export($this->absContainer, true),
-                var_export($this->path, true)
-            ));
+            return null;
         }
     }
 }
