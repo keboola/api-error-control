@@ -14,24 +14,16 @@ use Throwable;
 
 class LogProcessor
 {
-    /**
-     * @var AbstractUploader
-     */
+    /** @var null|false|AbstractUploader */
     private $uploader;
 
-    /**
-     * @var UploaderFactory
-     */
+    /** @var UploaderFactory */
     private $uploaderFactory;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $appName;
 
-    /**
-     * @var LogInfoInterface|null
-     */
+    /** @var LogInfoInterface|null */
     private $logInfo;
 
     public function __construct(UploaderFactory $factory, string $appName)
@@ -64,9 +56,7 @@ class LogProcessor
 
             if (!$ignoreException) {
                 try {
-                    $renderer = new HtmlErrorRenderer(true);
-                    $renderedException = $renderer->render($exception)->getAsString();
-                    $context['attachment'] = $this->getUploader()->upload($renderedException);
+                    $context['attachment'] = $this->uploadException($exception);
                 } catch (Throwable $e) {
                     $context['uploaderError'] = $e->getMessage();
                 }
@@ -91,11 +81,19 @@ class LogProcessor
         ]);
     }
 
-    private function getUploader(): AbstractUploader
+    private function uploadException(Throwable $exception): ?string
     {
-        if (empty($this->uploader)) {
-            $this->uploader = $this->uploaderFactory->getUploader();
+        if ($this->uploader === null) {
+            $this->uploader = $this->uploaderFactory->getUploader() ?? false;
         }
-        return $this->uploader;
+
+        if (!$this->uploader) {
+            return null;
+        }
+
+        $renderer = new HtmlErrorRenderer(true);
+        $renderedException = $renderer->render($exception)->getAsString();
+
+        return $this->uploader->upload($renderedException);
     }
 }

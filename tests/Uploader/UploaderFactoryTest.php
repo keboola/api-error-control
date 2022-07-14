@@ -48,12 +48,9 @@ class UploaderFactoryTest extends TestCase
         self::assertInstanceOf(LocalFileUploader::class, $factory->getUploader());
     }
 
-    public function testInvalid(): void
+    public function testNoUploader(): void
     {
         $factory = new UploaderFactory('https:\\example.com');
-        self::expectException(RuntimeException::class);
-        self::expectExceptionMessage('No uploader can be configured: s3Bucket: "NULL", s3Region: "NULL", ' .
-            'absConnectionString: "NULL", absContainer: "NULL", path: "NULL"');
-        $factory->getUploader();
+        self::assertNull($factory->getUploader());
     }
 }
