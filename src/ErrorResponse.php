@@ -19,14 +19,10 @@ class ErrorResponse extends JsonResponse
         'Content-Type' => 'application/json',
     ];
 
-    /**
-     * @var int
-     */
-    protected $encodingOptions = 0;
-
     public function __construct(ExceptionMessage $message)
     {
         parent::__construct($message->getSafeArray(), $message->getStatusCode(), self::HEADERS);
+        $this->setEncodingOptions(0);
     }
 
     public static function fromException(Throwable $error): self

@@ -42,7 +42,7 @@ class ExceptionListenerTest extends TestCase
         $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
-            HttpKernelInterface::MASTER_REQUEST,
+            HttpKernelInterface::MAIN_REQUEST,
             $exception
         );
         $handler = new TestHandler();
@@ -55,6 +55,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals(500, $response->getStatusCode());
         $responseBody = json_decode((string) $response->getContent(), true);
+        self::assertIsArray($responseBody);
         self::assertCount(5, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('12', $responseBody['code']);
@@ -65,6 +66,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(Logger::CRITICAL, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
+        self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
@@ -77,7 +79,7 @@ class ExceptionListenerTest extends TestCase
         $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
-            HttpKernelInterface::MASTER_REQUEST,
+            HttpKernelInterface::MAIN_REQUEST,
             $exception
         );
         $handler = new TestHandler();
@@ -90,6 +92,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals(421, $response->getStatusCode());
         $responseBody = json_decode((string) $response->getContent(), true);
+        self::assertIsArray($responseBody);
         self::assertCount(5, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('421', $responseBody['code']);
@@ -100,6 +103,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
+        self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
@@ -174,7 +178,7 @@ class ExceptionListenerTest extends TestCase
         $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
-            HttpKernelInterface::MASTER_REQUEST,
+            HttpKernelInterface::MAIN_REQUEST,
             $exception
         );
         $handler = new TestHandler();
@@ -187,6 +191,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals($statusCode, $response->getStatusCode());
         $responseBody = json_decode((string) $response->getContent(), true);
+        self::assertIsArray($responseBody);
         self::assertCount(5, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals($exceptionCode, $responseBody['code']);
@@ -205,6 +210,7 @@ class ExceptionListenerTest extends TestCase
                 'Field is missing.',
             ],
         ], $record['context']['context']);
+        self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
@@ -219,7 +225,7 @@ class ExceptionListenerTest extends TestCase
         $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
-            HttpKernelInterface::MASTER_REQUEST,
+            HttpKernelInterface::MAIN_REQUEST,
             $exception
         );
         $handler = new TestHandler();
@@ -232,6 +238,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode((string) $response->getContent(), true);
+        self::assertIsArray($responseBody);
         self::assertCount(5, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('0', $responseBody['code']);
@@ -242,6 +249,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
+        self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
@@ -253,7 +261,7 @@ class ExceptionListenerTest extends TestCase
         $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
-            HttpKernelInterface::MASTER_REQUEST,
+            HttpKernelInterface::MAIN_REQUEST,
             $exception
         );
         $handler = new TestHandler();
@@ -266,6 +274,7 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals(403, $response->getStatusCode());
         $responseBody = json_decode((string) $response->getContent(), true);
+        self::assertIsArray($responseBody);
         self::assertCount(5, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('403', $responseBody['code']);
@@ -276,6 +285,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
+        self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
     }
@@ -290,7 +300,7 @@ class ExceptionListenerTest extends TestCase
         $event = new ExceptionEvent(
             $this->getKernel(),
             $request,
-            HttpKernelInterface::MASTER_REQUEST,
+            HttpKernelInterface::MAIN_REQUEST,
             $exception
         );
         $handler = new TestHandler();
