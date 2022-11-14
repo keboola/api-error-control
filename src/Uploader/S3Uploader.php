@@ -18,6 +18,10 @@ class S3Uploader extends AbstractUploader
      */
     private $region;
 
+    private const CONNECT_TIMEOUT = 10;
+    private const CONNECT_RETRIES = 5;
+    private const TRANSFER_TIMEOUT = 120;
+
     public function __construct(string $storageApiUrl, string $s3bucket, string $region)
     {
         parent::__construct($storageApiUrl);
@@ -31,8 +35,12 @@ class S3Uploader extends AbstractUploader
             during symfony application initialization. */
         $s3client = new S3Client([
             'version' => '2006-03-01',
-            'retries' => 20,
+            'retries' => self::CONNECT_RETRIES,
             'region' => $this->region,
+            'http' => [
+                'connect_timeout' => self::CONNECT_TIMEOUT,
+                'timeout' => self::TRANSFER_TIMEOUT,
+            ],
         ]);
         $s3FileName = $this->generateFilename($contentType);
         $s3client->putObject([
