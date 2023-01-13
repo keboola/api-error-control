@@ -12,6 +12,7 @@ use Keboola\ErrorControl\EventListener\ExceptionListener;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LogLevel;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -63,12 +64,15 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('error', $responseBody['status']);
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
-        self::assertEquals(Logger::CRITICAL, $record['level']);
-        self::assertEquals($exception, $record['context']['exception']);
-        self::assertEquals([], $record['context']['context']);
-        self::assertIsString($record['context']['exceptionId']);
-        self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
-        self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
+        /** @var array $context */
+        $context = $record['context'];
+        self::assertEquals(LogLevel::CRITICAL, $record['level']);
+        self::assertArrayHasKey('exception', $context);
+        self::assertEquals($exception, $context['exception']);
+        self::assertEquals([], $context['context']);
+        self::assertIsString($context['exceptionId']);
+        self::assertStringStartsWith('exception-', $context['exceptionId']);
+        self::assertSame($responseBody['exceptionId'], $context['exceptionId']);
     }
 
     public function testHandleUserExceptionInterface(): void
@@ -100,7 +104,8 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('error', $responseBody['status']);
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
-        self::assertEquals(Logger::ERROR, $record['level']);
+        /** @var array $record['context'] */
+        self::assertEquals(LogLevel::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
@@ -126,7 +131,7 @@ class ExceptionListenerTest extends TestCase
             'statusCode' => 421,
             'exceptionCode' => '421',
             'message' => 'exception',
-            'loggerLevel' => Logger::ERROR,
+            'loggerLevel' => LogLevel::ERROR,
         ];
 
         yield 'HttpException' => [
@@ -143,7 +148,7 @@ class ExceptionListenerTest extends TestCase
             'statusCode' => 421,
             'exceptionCode' => '421',
             'message' => 'exception',
-            'loggerLevel' => Logger::ERROR,
+            'loggerLevel' => LogLevel::ERROR,
         ];
 
         yield 'InternalException' => [
@@ -160,7 +165,7 @@ class ExceptionListenerTest extends TestCase
             'statusCode' => 500,
             'exceptionCode' => '12',
             'message' => 'Internal Server Error occurred.',
-            'loggerLevel' => Logger::CRITICAL,
+            'loggerLevel' => LogLevel::CRITICAL,
         ];
     }
 
@@ -203,6 +208,8 @@ class ExceptionListenerTest extends TestCase
             ],
         ], $responseBody['context']);
         $record = $handler->getRecords()[0];
+        /** @var array $record['context'] */
+
         self::assertEquals($loggerLevel, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([
@@ -246,7 +253,8 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('error', $responseBody['status']);
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
-        self::assertEquals(Logger::ERROR, $record['level']);
+        /** @var array $record['context'] */
+        self::assertEquals(LogLevel::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
@@ -282,7 +290,8 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('error', $responseBody['status']);
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
-        self::assertEquals(Logger::ERROR, $record['level']);
+        /** @var array $record['context'] */
+        self::assertEquals(LogLevel::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
