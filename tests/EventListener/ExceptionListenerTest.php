@@ -10,6 +10,7 @@ use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
 use Keboola\ErrorControl\EventListener\ExceptionListener;
 use Monolog\Handler\TestHandler;
+use Monolog\Level;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -64,6 +65,8 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::CRITICAL, $record['level']);
+        self::assertIsArray($record['context']);
+        self::assertArrayHasKey('exception', $record['context']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
@@ -101,6 +104,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::ERROR, $record['level']);
+        self::assertIsArray($record['context']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
@@ -203,6 +207,7 @@ class ExceptionListenerTest extends TestCase
             ],
         ], $responseBody['context']);
         $record = $handler->getRecords()[0];
+        self::assertIsArray($record['context']);
         self::assertEquals($loggerLevel, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([
@@ -246,6 +251,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('error', $responseBody['status']);
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
+        self::assertIsArray($record['context']);
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);
@@ -282,6 +288,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('error', $responseBody['status']);
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
+        self::assertIsArray($record['context']);
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
         self::assertEquals([], $record['context']['context']);

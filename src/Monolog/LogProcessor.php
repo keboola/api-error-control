@@ -14,21 +14,14 @@ use Throwable;
 
 class LogProcessor
 {
-    /** @var null|false|AbstractUploader */
-    private $uploader;
-
-    /** @var UploaderFactory */
-    private $uploaderFactory;
-
     /** @var string */
     private $appName;
 
     /** @var LogInfoInterface|null */
     private $logInfo;
 
-    public function __construct(UploaderFactory $factory, string $appName)
+    public function __construct(string $appName)
     {
-        $this->uploaderFactory = $factory;
         $this->appName = $appName;
     }
 
@@ -49,19 +42,6 @@ class LogProcessor
         if ($exception instanceof Throwable) {
             unset($context['exception']);
 
-            $ignoreException =
-                $exception instanceof ErrorException &&
-                in_array($exception->getSeverity(), [E_DEPRECATED, E_USER_DEPRECATED], true)
-            ;
-
-            if (!$ignoreException) {
-                try {
-                    $context['attachment'] = $this->uploadException($exception);
-                } catch (Throwable $e) {
-                    $context['uploaderError'] = $e->getMessage();
-                }
-            }
-
             $context['exceptionId'] = $context['exceptionId'] ?? ExceptionIdGenerator::generateId();
             $context['exception'] = [
                 'message' => $exception->getMessage(),
@@ -79,21 +59,5 @@ class LogProcessor
             'priority' => $record['level_name'],
             'extra' => [],
         ]);
-    }
-
-    private function uploadException(Throwable $exception): ?string
-    {
-        if ($this->uploader === null) {
-            $this->uploader = $this->uploaderFactory->getUploader() ?? false;
-        }
-
-        if (!$this->uploader) {
-            return null;
-        }
-
-        $renderer = new HtmlErrorRenderer(true);
-        $renderedException = $renderer->render($exception)->getAsString();
-
-        return $this->uploader->upload($renderedException);
     }
 }
