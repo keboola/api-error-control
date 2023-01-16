@@ -10,8 +10,8 @@ pool:
 
 strategy:
   matrix:
-    'PHP 8.2':
-      PHP_VERSION: 8.2
+    'PHP 8.1':
+      PHP_VERSION: 8.1
 
 steps:
   - script: docker-compose build --build-arg PHP_VERSION=$(PHP_VERSION) ci
