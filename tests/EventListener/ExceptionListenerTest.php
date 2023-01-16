@@ -103,7 +103,6 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals('error', $responseBody['status']);
         self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
-        /** @var Level $record['level'] */
         self::assertEquals(Logger::ERROR, $record['level']);
         /** @var array $record['context'] */
         self::assertEquals($exception, $record['context']['exception']);
