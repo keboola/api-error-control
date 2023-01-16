@@ -53,6 +53,7 @@ services:
             $s3Region: "%logs_s3_bucket_region%"
         
 ```
+Also note that 4.x uses Monolog 3.x and php >= 8.1, so you will also need to support these versions
 
 ## License
 
