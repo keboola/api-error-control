@@ -29,20 +29,6 @@ services:
             - { name: monolog.processor, method: processRecord }
 ```
 _Note:_ You need to have `symfony/monolog-bundle` installed for the tag `monolog.processor` to work.  
-- `UploaderFactory` - Used by LogProcessor to upload full exception traces into S3 or ABS. To configure, add the following 
-to `services.yaml`:
-```yaml
-services:
-    Keboola\ErrorControl\Uploader\UploaderFactory:
-        arguments:
-            $storageApiUrl: "%storage_api_url%"
-            $s3Bucket: "%logs_s3_bucket%"
-            $s3Region: "%logs_s3_bucket_region%"
-            $absConnectionString: "%log_abs_connection_string%"
-            $absContainer: "%log_abs_container%"
-        
-```
-At least one combination of ($s3Bucket and $s3Region) or ($absConnectionString and $absContainer) must be provided. 
 
 - `LogInfo` - A record class used to pass additional information to the log processor. Use it in application code as:
 ```php
@@ -53,42 +39,10 @@ $logProcessor->setLogInfo(new LogInfo(...));
 
 ## Development
 
-Prerequisites:
-* locally installed `terraform` and `jq`
-    * https://www.terraform.io
-    * https://stedolan.github.io/jq
-* configured `az` and `aws` CLI tools (run `az login` and `aws configure --profile YOUR_AWS_PROFILE_NAME`)
-
-### AWS and Azure resources
-
-```shell
-export NAME_PREFIX= # your name/nickname to make your resource unique & recognizable
-
-cat <<EOF > ./provisioning/local/terraform.tfvars
-name_prefix = "${NAME_PREFIX}"
-EOF
-
-terraform -chdir=./provisioning/local init -backend-config="key=api-error-control/${NAME_PREFIX}.tfstate"
-terraform -chdir=./provisioning/local apply
-
-./provisioning/local/update-env.sh azure # or aws
-```
-
 Use `docker-compose run dev composer ci` to run tests locally.
 
-## Migration From 2.x to 3.x
-Replace:
-
-```yaml
-services:
-    Keboola\ErrorControl\Monolog\S3Uploader:
-        arguments:
-            $storageApiUrl: "%storage_api_url%"
-            $s3bucket: "%logs_s3_bucket%"
-            $region: "%logs_s3_bucket_region%"
-```
-
-with:
+## Migration From 3.x to 4.x
+Remove:
  
 ```yaml
 services:
@@ -99,9 +53,7 @@ services:
             $s3Region: "%logs_s3_bucket_region%"
         
 ```
-
-In case you were using `S3Uploader` directly somewhere, you have to replace the occurrences with `UploaderFactory` 
-and call `getUploader()` method to actually get an uploader.
+Also note that 4.x uses Monolog 3.x and php >= 8.1, so you will also need to support these versions
 
 ## License
 
