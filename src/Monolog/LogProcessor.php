@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Monolog;
 
-use ErrorException;
 use Keboola\ErrorControl\ExceptionIdGenerator;
-use Keboola\ErrorControl\Uploader\AbstractUploader;
-use Keboola\ErrorControl\Uploader\UploaderFactory;
 use Monolog\DateTimeImmutable;
-use Monolog\Processor\ProcessorInterface;
 use Monolog\LogRecord;
-use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
+use Monolog\Processor\ProcessorInterface;
 use Throwable;
 
 class LogProcessor implements ProcessorInterface
