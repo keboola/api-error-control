@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\Monolog;
 
-use ErrorException;
 use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
-use Keboola\ErrorControl\Uploader\AbstractUploader;
-use Keboola\ErrorControl\Uploader\UploaderFactory;
 use Monolog\DateTimeImmutable;
 use Monolog\Logger;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 class LogProcessorTest extends TestCase
 {
@@ -28,7 +23,7 @@ class LogProcessorTest extends TestCase
         ];
 
         $processor = new LogProcessor('test-app');
-        $newRecord = $processor->processRecord($record);
+        $newRecord = $processor($record);
         self::assertCount(10, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(250, $newRecord['level']);
@@ -64,7 +59,7 @@ class LogProcessorTest extends TestCase
                 '123.123.123.123'
             )
         );
-        $newRecord = $processor->processRecord($record);
+        $newRecord = $processor($record);
         self::assertCount(15, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);
@@ -102,7 +97,7 @@ class LogProcessorTest extends TestCase
             ],
         ];
         $processor = new LogProcessor('test-app');
-        $newRecord = $processor->processRecord($record);
+        $newRecord = $processor($record);
         self::assertCount(10, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
         self::assertEquals(500, $newRecord['level']);
@@ -141,7 +136,7 @@ class LogProcessorTest extends TestCase
                 }
             }
         );
-        $newRecord = $processor->processRecord($record);
+        $newRecord = $processor($record);
         self::assertCount(11, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);

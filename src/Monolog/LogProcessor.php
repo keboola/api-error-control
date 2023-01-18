@@ -9,11 +9,12 @@ use Keboola\ErrorControl\ExceptionIdGenerator;
 use Keboola\ErrorControl\Uploader\AbstractUploader;
 use Keboola\ErrorControl\Uploader\UploaderFactory;
 use Monolog\DateTimeImmutable;
+use Monolog\Processor\ProcessorInterface;
 use Monolog\LogRecord;
 use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
 use Throwable;
 
-class LogProcessor
+class LogProcessor implements ProcessorInterface
 {
     /** @var string */
     private $appName;
@@ -31,7 +32,7 @@ class LogProcessor
         $this->logInfo = $logInfo;
     }
 
-    public function processRecord(array|LogRecord $record): array
+    public function __invoke(array|LogRecord $record): array
     {
         if ($record instanceof LogRecord) {
             $record = $record->toArray();
