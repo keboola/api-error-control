@@ -24,7 +24,7 @@ class LogProcessorTest extends TestCase
 
         $processor = new LogProcessor('test-app');
         $newRecord = (array) $processor($record);
-        self::assertCount(10, $newRecord);
+        self::assertCount(8, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(250, $newRecord['level']);
         self::assertEquals('test-app', $newRecord['app']);
@@ -33,8 +33,6 @@ class LogProcessorTest extends TestCase
         self::assertEquals([], $newRecord['context']);
         self::assertEquals([], $newRecord['extra']);
         self::assertEquals('NOTICE', $newRecord['level_name']);
-        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
-        self::assertEquals('', $newRecord['channel']);
     }
 
     public function testProcessRecordLogInfo(): void
@@ -60,7 +58,7 @@ class LogProcessorTest extends TestCase
             )
         );
         $newRecord = (array) $processor($record);
-        self::assertCount(15, $newRecord);
+        self::assertCount(13, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);
         self::assertEquals('test-app', $newRecord['app']);
@@ -69,8 +67,6 @@ class LogProcessorTest extends TestCase
         self::assertEquals([], $newRecord['context']);
         self::assertEquals([], $newRecord['extra']);
         self::assertEquals('WARNING', $newRecord['level_name']);
-        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
-        self::assertEquals('', $newRecord['channel']);
         self::assertEquals('keboola.docker-demo-sync', $newRecord['component']);
         self::assertEquals('12345678', $newRecord['runId']);
         self::assertCount(3, $newRecord['http']);
@@ -98,7 +94,7 @@ class LogProcessorTest extends TestCase
         ];
         $processor = new LogProcessor('test-app');
         $newRecord = (array) $processor($record);
-        self::assertCount(10, $newRecord);
+        self::assertCount(8, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
         self::assertEquals(500, $newRecord['level']);
         self::assertEquals('test-app', $newRecord['app']);
@@ -112,8 +108,6 @@ class LogProcessorTest extends TestCase
         self::assertArrayHasKey('trace', $newRecord['context']['exception']);
         self::assertEquals([], $newRecord['extra']);
         self::assertEquals('CRITICAL', $newRecord['level_name']);
-        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
-        self::assertEquals('', $newRecord['channel']);
     }
 
     public function testLogProcessorOnlyUsesLogInfoInterface(): void
@@ -137,7 +131,7 @@ class LogProcessorTest extends TestCase
             }
         );
         $newRecord = (array) $processor($record);
-        self::assertCount(11, $newRecord);
+        self::assertCount(9, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);
         self::assertEquals('will be added', $newRecord['level_description']);
@@ -147,7 +141,5 @@ class LogProcessorTest extends TestCase
         self::assertEquals([], $newRecord['context']);
         self::assertEquals([], $newRecord['extra']);
         self::assertEquals('WARNING', $newRecord['level_name']);
-        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
-        self::assertEquals('', $newRecord['channel']);
     }
 }
