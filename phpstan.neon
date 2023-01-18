@@ -5,6 +5,8 @@ parameters:
         - src
         - tests
     ignoreErrors:
+        - '#Method Keboola\ErrorControl\Monolog\LogProcessor::__invoke() should return array{message: string, context: array, level: 100|200|250|300|400|500|550|600, level_name: 'ALERT'|'CRITICAL'|'DEBUG'|'EMERGENCY'|'ERROR'|'INFO'|'NOTICE'|'WARNING', channel: string, datetime: DateTimeImmutable, extra:array}|Monolog\LogRecord but returns non-empty-array.#'
+        - '#Parameter #1 $record of callable Keboola\ErrorControl\Monolog\LogProcessor expects array{message: string, context: array, level: 100|200|250|300|400|500|550|600, level_name: 'ALERT'|'CRITICAL'|'DEBUG'|'EMERGENCY'|'ERROR'|'INFO'|'NOTICE'|'WARNING', channel: string, datetime: DateTimeImmutable, extra: array}|Monolog\LogRecord, array{(.*)} given.#'
     excludePaths:
         - src/Kernel.php
 
