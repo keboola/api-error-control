@@ -51,14 +51,12 @@ class LogProcessor implements ProcessorInterface
             ];
         }
 
-        return array_merge($record, [
-            'channel' => $record['channel'] ?? '',
-            'datetime' => $record['datetime'] ?? new DateTimeImmutable(true),
-            'context' => $context,
-            'app' => $this->appName,
-            'pid' => getmypid(),
-            'priority' => $record['level_name'],
-            'extra' => [],
-        ]);
+        $record['context'] = $context;
+        $record['app'] = $this->appName;
+        $record['pid'] = getmypid();
+        $record['priority'] = $record['level_name'];
+        $record['extra'] = [];
+
+        return $record;
     }
 }
