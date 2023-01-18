@@ -23,7 +23,7 @@ class LogProcessorTest extends TestCase
         ];
 
         $processor = new LogProcessor('test-app');
-        $newRecord = $processor($record);
+        $newRecord = (array) $processor($record);
         self::assertCount(10, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(250, $newRecord['level']);
@@ -59,7 +59,7 @@ class LogProcessorTest extends TestCase
                 '123.123.123.123'
             )
         );
-        $newRecord = $processor($record);
+        $newRecord = (array) $processor($record);
         self::assertCount(15, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);
@@ -97,7 +97,7 @@ class LogProcessorTest extends TestCase
             ],
         ];
         $processor = new LogProcessor('test-app');
-        $newRecord = $processor($record);
+        $newRecord = (array) $processor($record);
         self::assertCount(10, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
         self::assertEquals(500, $newRecord['level']);
@@ -136,7 +136,7 @@ class LogProcessorTest extends TestCase
                 }
             }
         );
-        $newRecord = $processor($record);
+        $newRecord = (array) $processor($record);
         self::assertCount(11, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);

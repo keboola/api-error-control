@@ -28,7 +28,7 @@ class LogProcessor implements ProcessorInterface
         $this->logInfo = $logInfo;
     }
 
-    public function __invoke(array|LogRecord $record): array
+    public function __invoke(array|LogRecord $record): array|LogRecord
     {
         if ($record instanceof LogRecord) {
             $record = $record->toArray();
