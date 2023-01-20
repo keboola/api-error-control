@@ -5,11 +5,27 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Monolog;
 
 use Keboola\ErrorControl\ExceptionIdGenerator;
-use Monolog\DateTimeImmutable;
+use Monolog\Logger;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Throwable;
 
+/**
+ * @phpstan-type Level Logger::DEBUG|Logger::INFO|Logger::NOTICE|Logger::WARNING|Logger::ERROR|Logger::CRITICAL|Logger::ALERT|Logger::EMERGENCY
+ * @phpstan-type LevelName 'DEBUG'|'INFO'|'NOTICE'|'WARNING'|'ERROR'|'CRITICAL'|'ALERT'|'EMERGENCY'
+ * @phpstan-type Record array{
+ *      message: string,
+ *      context: mixed[],
+ *      level: Level,
+ *      level_name: LevelName,
+ *      channel: string,
+ *      datetime: \DateTimeImmutable,
+ *      extra: mixed[],
+ *      app?: string,
+ *      pid?: string,
+ *      priority?: string,
+ * }
+ */
 class LogProcessor implements ProcessorInterface
 {
     /** @var string */
@@ -28,6 +44,10 @@ class LogProcessor implements ProcessorInterface
         $this->logInfo = $logInfo;
     }
 
+    /**
+     * @param Record|LogRecord $record
+     * @return Record|LogRecord The processed record
+     */
     public function __invoke(array|LogRecord $record): array|LogRecord
     {
         if ($record instanceof LogRecord) {
@@ -57,6 +77,7 @@ class LogProcessor implements ProcessorInterface
         $record['priority'] = $record['level_name'];
         $record['extra'] = [];
 
+        // @phpstan-ignore-next-line
         return $record;
     }
 }

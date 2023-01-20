@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\Monolog;
 
+use DateTimeImmutable;
 use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
-use Monolog\DateTimeImmutable;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 
@@ -20,6 +20,10 @@ class LogProcessorTest extends TestCase
             'message' => 'test notice',
             'level' => Logger::NOTICE,
             'level_name' => 'NOTICE',
+            'context' => [],
+            'channel' => 'test',
+            'datetime' => new DateTimeImmutable(),
+            'extra' => [],
         ];
 
         $processor = new LogProcessor('test-app');
@@ -43,6 +47,10 @@ class LogProcessorTest extends TestCase
             'message' => 'test notice',
             'level' => Logger::WARNING,
             'level_name' => 'WARNING',
+            'context' => [],
+            'channel' => 'test',
+            'datetime' => new DateTimeImmutable(),
+            'extra' => [],
         ];
         $processor = new LogProcessor('test-app');
         $processor->setLogInfo(
@@ -91,6 +99,9 @@ class LogProcessorTest extends TestCase
                 'exceptionId' => '12345',
                 'exception' => new Exception('exception message', 543),
             ],
+            'channel' => 'test',
+            'datetime' => new DateTimeImmutable(),
+            'extra' => [],
         ];
         $processor = new LogProcessor('test-app');
         $newRecord = (array) $processor($record);
@@ -116,6 +127,10 @@ class LogProcessorTest extends TestCase
             'message' => 'test notice',
             'level' => Logger::WARNING,
             'level_name' => 'WARNING',
+            'context' => [],
+            'channel' => 'test',
+            'datetime' => new DateTimeImmutable(),
+            'extra' => [],
         ];
 
         $processor = new LogProcessor('test-app');
