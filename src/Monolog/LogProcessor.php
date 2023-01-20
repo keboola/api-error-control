@@ -50,11 +50,8 @@ class LogProcessor implements ProcessorInterface
      */
     public function __invoke(array|LogRecord $record): array|LogRecord
     {
-        if ($record instanceof LogRecord) {
-            $record = $record->toArray();
-        }
         if ($this->logInfo !== null) {
-            $record = array_merge($this->logInfo->toArray(), $record);
+            $record['extra'] = array_merge($this->logInfo->toArray(), $record['extra']);
         }
 
         $context = $record['context'] ?? [];
@@ -70,14 +67,11 @@ class LogProcessor implements ProcessorInterface
                 'trace' => $exception->getTraceAsString(),
             ];
         }
-
         $record['context'] = $context;
-        $record['app'] = $this->appName;
-        $record['pid'] = getmypid();
-        $record['priority'] = $record['level_name'];
-        $record['extra'] = [];
+        $record['extra']['app'] = $this->appName;
+        $record['extra']['pid'] = getmypid();
+        $record['extra']['priority'] = $record['level_name'];
 
-        // @phpstan-ignore-next-line
         return $record;
     }
 }
