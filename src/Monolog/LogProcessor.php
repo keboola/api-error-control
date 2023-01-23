@@ -21,9 +21,6 @@ use Throwable;
  *      channel: string,
  *      datetime: \DateTimeImmutable,
  *      extra: mixed[],
- *      app?: string,
- *      pid?: string,
- *      priority?: string,
  * }
  */
 class LogProcessor implements ProcessorInterface
