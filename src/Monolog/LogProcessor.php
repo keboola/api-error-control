@@ -4,15 +4,26 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Monolog;
 
-use ErrorException;
 use Keboola\ErrorControl\ExceptionIdGenerator;
-use Keboola\ErrorControl\Uploader\AbstractUploader;
-use Keboola\ErrorControl\Uploader\UploaderFactory;
-use Monolog\DateTimeImmutable;
-use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
+use Monolog\Logger;
+use Monolog\LogRecord;
+use Monolog\Processor\ProcessorInterface;
 use Throwable;
 
-class LogProcessor
+/**
+ * @phpstan-type Level Logger::DEBUG|Logger::INFO|Logger::NOTICE|Logger::WARNING|Logger::ERROR|Logger::CRITICAL|Logger::ALERT|Logger::EMERGENCY
+ * @phpstan-type LevelName 'DEBUG'|'INFO'|'NOTICE'|'WARNING'|'ERROR'|'CRITICAL'|'ALERT'|'EMERGENCY'
+ * @phpstan-type Record array{
+ *      message: string,
+ *      context: mixed[],
+ *      level: Level,
+ *      level_name: LevelName,
+ *      channel: string,
+ *      datetime: \DateTimeImmutable,
+ *      extra: mixed[],
+ * }
+ */
+class LogProcessor implements ProcessorInterface
 {
     /** @var string */
     private $appName;
@@ -30,10 +41,14 @@ class LogProcessor
         $this->logInfo = $logInfo;
     }
 
-    public function processRecord(array $record): array
+    /**
+     * @param Record|LogRecord $record
+     * @return Record|LogRecord The processed record
+     */
+    public function __invoke(array|LogRecord $record): array|LogRecord
     {
         if ($this->logInfo !== null) {
-            $record = array_merge($this->logInfo->toArray(), $record);
+            $record['extra'] = array_merge($this->logInfo->toArray(), $record['extra']);
         }
 
         $context = $record['context'] ?? [];
@@ -49,15 +64,11 @@ class LogProcessor
                 'trace' => $exception->getTraceAsString(),
             ];
         }
+        $record['context'] = $context;
+        $record['extra']['app'] = $this->appName;
+        $record['extra']['pid'] = getmypid();
+        $record['extra']['priority'] = $record['level_name'];
 
-        return array_merge($record, [
-            'channel' => $record['channel'] ?? '',
-            'datetime' => $record['datetime'] ?? new DateTimeImmutable(true),
-            'context' => $context,
-            'app' => $this->appName,
-            'pid' => getmypid(),
-            'priority' => $record['level_name'],
-            'extra' => [],
-        ]);
+        return $record;
     }
 }

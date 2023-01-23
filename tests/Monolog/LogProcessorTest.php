@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Tests\Monolog;
 
-use ErrorException;
+use DateTimeImmutable;
 use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
-use Keboola\ErrorControl\Uploader\AbstractUploader;
-use Keboola\ErrorControl\Uploader\UploaderFactory;
-use Monolog\DateTimeImmutable;
 use Monolog\Logger;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 class LogProcessorTest extends TestCase
 {
@@ -25,21 +20,21 @@ class LogProcessorTest extends TestCase
             'message' => 'test notice',
             'level' => Logger::NOTICE,
             'level_name' => 'NOTICE',
+            'context' => [],
+            'channel' => 'test',
+            'datetime' => new DateTimeImmutable(),
+            'extra' => [],
         ];
 
         $processor = new LogProcessor('test-app');
-        $newRecord = $processor->processRecord($record);
-        self::assertCount(10, $newRecord);
+        $newRecord = (array) $processor($record);
+        self::assertCount(7, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(250, $newRecord['level']);
-        self::assertEquals('test-app', $newRecord['app']);
-        self::assertGreaterThan(0, $newRecord['pid']);
-        self::assertEquals('NOTICE', $newRecord['priority']);
+        self::assertEquals('test-app', $newRecord['extra']['app']);
+        self::assertGreaterThan(0, $newRecord['extra']['pid']);
+        self::assertEquals('NOTICE', $newRecord['extra']['priority']);
         self::assertEquals([], $newRecord['context']);
-        self::assertEquals([], $newRecord['extra']);
-        self::assertEquals('NOTICE', $newRecord['level_name']);
-        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
-        self::assertEquals('', $newRecord['channel']);
     }
 
     public function testProcessRecordLogInfo(): void
@@ -50,6 +45,10 @@ class LogProcessorTest extends TestCase
             'message' => 'test notice',
             'level' => Logger::WARNING,
             'level_name' => 'WARNING',
+            'context' => [],
+            'channel' => 'test',
+            'datetime' => new DateTimeImmutable(),
+            'extra' => [],
         ];
         $processor = new LogProcessor('test-app');
         $processor->setLogInfo(
@@ -64,30 +63,29 @@ class LogProcessorTest extends TestCase
                 '123.123.123.123'
             )
         );
-        $newRecord = $processor->processRecord($record);
-        self::assertCount(15, $newRecord);
+        $newRecord = (array) $processor($record);
+        self::assertCount(7, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);
-        self::assertEquals('test-app', $newRecord['app']);
-        self::assertGreaterThan(0, $newRecord['pid']);
-        self::assertEquals('WARNING', $newRecord['priority']);
+        self::assertEquals('test-app', $newRecord['extra']['app']);
+        self::assertGreaterThan(0, $newRecord['extra']['pid']);
+        self::assertEquals('WARNING', $newRecord['extra']['priority']);
         self::assertEquals([], $newRecord['context']);
-        self::assertEquals([], $newRecord['extra']);
-        self::assertEquals('WARNING', $newRecord['level_name']);
-        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
-        self::assertEquals('', $newRecord['channel']);
-        self::assertEquals('keboola.docker-demo-sync', $newRecord['component']);
-        self::assertEquals('12345678', $newRecord['runId']);
-        self::assertCount(3, $newRecord['http']);
-        self::assertEquals('http://example.com', $newRecord['http']['url']);
-        self::assertEquals('123.123.123.123', $newRecord['http']['ip']);
-        self::assertEquals('N/A', $newRecord['http']['userAgent']);
-        self::assertCount(2, $newRecord['token']);
-        self::assertEquals('12345', $newRecord['token']['id']);
-        self::assertEquals('My Token', $newRecord['token']['description']);
-        self::assertCount(2, $newRecord['owner']);
-        self::assertEquals('123', $newRecord['owner']['id']);
-        self::assertEquals('My Project', $newRecord['owner']['name']);
+        self::assertEquals('keboola.docker-demo-sync', $newRecord['extra']['component']);
+        self::assertEquals('12345678', $newRecord['extra']['runId']);
+        self::assertIsArray($newRecord['extra']['http']);
+        self::assertCount(3, $newRecord['extra']['http']);
+        self::assertEquals('http://example.com', $newRecord['extra']['http']['url']);
+        self::assertEquals('123.123.123.123', $newRecord['extra']['http']['ip']);
+        self::assertEquals('N/A', $newRecord['extra']['http']['userAgent']);
+        self::assertIsArray($newRecord['extra']['token']);
+        self::assertCount(2, $newRecord['extra']['token']);
+        self::assertEquals('12345', $newRecord['extra']['token']['id']);
+        self::assertEquals('My Token', $newRecord['extra']['token']['description']);
+        self::assertIsArray($newRecord['extra']['owner']);
+        self::assertCount(2, $newRecord['extra']['owner']);
+        self::assertEquals('123', $newRecord['extra']['owner']['id']);
+        self::assertEquals('My Project', $newRecord['extra']['owner']['name']);
     }
 
     public function testProcessRecordException(): void
@@ -100,25 +98,25 @@ class LogProcessorTest extends TestCase
                 'exceptionId' => '12345',
                 'exception' => new Exception('exception message', 543),
             ],
+            'channel' => 'test',
+            'datetime' => new DateTimeImmutable(),
+            'extra' => [],
         ];
         $processor = new LogProcessor('test-app');
-        $newRecord = $processor->processRecord($record);
-        self::assertCount(10, $newRecord);
+        $newRecord = (array) $processor($record);
+        self::assertCount(7, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
         self::assertEquals(500, $newRecord['level']);
-        self::assertEquals('test-app', $newRecord['app']);
-        self::assertGreaterThan(0, $newRecord['pid']);
-        self::assertEquals('CRITICAL', $newRecord['priority']);
+        self::assertEquals('test-app', $newRecord['extra']['app']);
+        self::assertGreaterThan(0, $newRecord['extra']['pid']);
+        self::assertEquals('CRITICAL', $newRecord['extra']['priority']);
         self::assertCount(2, $newRecord['context']);
         self::assertEquals('12345', $newRecord['context']['exceptionId']);
+        self::assertIsArray($newRecord['context']['exception']);
         self::assertCount(3, $newRecord['context']['exception']);
         self::assertEquals('exception message', $newRecord['context']['exception']['message']);
         self::assertEquals(543, $newRecord['context']['exception']['code']);
         self::assertArrayHasKey('trace', $newRecord['context']['exception']);
-        self::assertEquals([], $newRecord['extra']);
-        self::assertEquals('CRITICAL', $newRecord['level_name']);
-        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
-        self::assertEquals('', $newRecord['channel']);
     }
 
     public function testLogProcessorOnlyUsesLogInfoInterface(): void
@@ -127,6 +125,10 @@ class LogProcessorTest extends TestCase
             'message' => 'test notice',
             'level' => Logger::WARNING,
             'level_name' => 'WARNING',
+            'context' => [],
+            'channel' => 'test',
+            'datetime' => new DateTimeImmutable(),
+            'extra' => [],
         ];
 
         $processor = new LogProcessor('test-app');
@@ -141,18 +143,14 @@ class LogProcessorTest extends TestCase
                 }
             }
         );
-        $newRecord = $processor->processRecord($record);
-        self::assertCount(11, $newRecord);
+        $newRecord = (array) $processor($record);
+        self::assertCount(7, $newRecord);
         self::assertEquals('test notice', $newRecord['message']);
         self::assertEquals(300, $newRecord['level']);
-        self::assertEquals('will be added', $newRecord['level_description']);
-        self::assertEquals('test-app', $newRecord['app']);
-        self::assertGreaterThan(0, $newRecord['pid']);
-        self::assertEquals('WARNING', $newRecord['priority']);
+        self::assertEquals('will be added', $newRecord['extra']['level_description']);
+        self::assertEquals('test-app', $newRecord['extra']['app']);
+        self::assertGreaterThan(0, $newRecord['extra']['pid']);
+        self::assertEquals('WARNING', $newRecord['extra']['priority']);
         self::assertEquals([], $newRecord['context']);
-        self::assertEquals([], $newRecord['extra']);
-        self::assertEquals('WARNING', $newRecord['level_name']);
-        self::assertInstanceOf(DateTimeImmutable::class, $newRecord['datetime']);
-        self::assertEquals('', $newRecord['channel']);
     }
 }
