@@ -9,7 +9,10 @@ use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
+use Monolog\Formatter\JsonFormatter;
+use Monolog\Level;
 use Monolog\Logger;
+use Monolog\LogRecord;
 use PHPUnit\Framework\TestCase;
 
 class LogProcessorTest extends TestCase
@@ -104,19 +107,49 @@ class LogProcessorTest extends TestCase
         ];
         $processor = new LogProcessor('test-app');
         $newRecord = (array) $processor($record);
+
         self::assertCount(7, $newRecord);
         self::assertEquals('test exception', $newRecord['message']);
         self::assertEquals(500, $newRecord['level']);
+        self::assertIsArray($newRecord['extra']);
         self::assertEquals('test-app', $newRecord['extra']['app']);
         self::assertGreaterThan(0, $newRecord['extra']['pid']);
         self::assertEquals('CRITICAL', $newRecord['extra']['priority']);
+        self::assertIsArray($newRecord['context']);
+        self::assertEquals(
+            new Exception('exception message', 543),
+            $newRecord['context']['exception']
+        );
+        self::assertIsArray($newRecord['context']);
         self::assertCount(2, $newRecord['context']);
-        self::assertEquals('12345', $newRecord['context']['exceptionId']);
-        self::assertIsArray($newRecord['context']['exception']);
-        self::assertCount(3, $newRecord['context']['exception']);
-        self::assertEquals('exception message', $newRecord['context']['exception']['message']);
-        self::assertEquals(543, $newRecord['context']['exception']['code']);
-        self::assertArrayHasKey('trace', $newRecord['context']['exception']);
+    }
+
+    public function testProcessRecordExceptionWithFormatter(): void
+    {
+        self::markTestSkipped('one day possibly');
+        /*
+        $record = new LogRecord(
+            new DateTimeImmutable(),
+            'test',
+            Level::Info,
+            'test',
+            [
+                'exceptionId' => '12345',
+                'exception' => new Exception('exception message', 543),
+            ],
+            ['channel' => 'test'],
+        );
+        $formatter = new JsonFormatter();
+        $processor = new LogProcessor('test-app');
+        $newRecord = $processor($record);
+        self::assertInstanceOf(LogRecord::class, $newRecord);
+        $formatted = $formatter->format($newRecord);
+        self::assertStringContainsString(
+            // phpcs:ignore Generic.Files.LineLength
+            '{"message":"test","context":{"exceptionId":"12345","exception":{"class":"Exception","message":"exception message","code":543',
+            $formatted
+        );
+        */
     }
 
     public function testLogProcessorOnlyUsesLogInfoInterface(): void

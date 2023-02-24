@@ -17,8 +17,15 @@ class ExceptionTransformerTest extends TestCase
     {
         $ex = new Exception('test');
         $message = ExceptionTransformer::transformException($ex)->getFullArray();
+
         self::assertStringContainsString('exception-', $message['exceptionId']);
+        self::assertStringContainsString(
+            'Keboola\ErrorControl\Tests\Message\ExceptionTransformerTest->testTransform()',
+            $message['trace']
+        );
         unset($message['exceptionId']);
+        unset($message['trace']);
+
         self::assertEquals(
             [
                 'error' => 'Internal Server Error occurred.',
@@ -36,10 +43,17 @@ class ExceptionTransformerTest extends TestCase
         $ex = new class('test') extends Exception implements UserExceptionInterface {
         };
         $message = ExceptionTransformer::transformException($ex)->getFullArray();
+
         self::assertStringContainsString('exception-', $message['exceptionId']);
         unset($message['exceptionId']);
         self::assertInstanceOf(UserExceptionInterface::class, $message['exception']);
         unset($message['exception']);
+        self::assertStringContainsString(
+            'Keboola\ErrorControl\Tests\Message\ExceptionTransformerTest->testTransformUserException()',
+            $message['trace']
+        );
+        unset($message['trace']);
+
         self::assertEquals(
             [
                 'error' => 'test',
@@ -65,10 +79,17 @@ class ExceptionTransformerTest extends TestCase
             }
         };
         $message = ExceptionTransformer::transformException($ex)->getFullArray();
+
         self::assertStringContainsString('exception-', $message['exceptionId']);
         unset($message['exceptionId']);
         self::assertInstanceOf(HttpExceptionInterface::class, $message['exception']);
         unset($message['exception']);
+        self::assertStringContainsString(
+            'Keboola\ErrorControl\Tests\Message\ExceptionTransformerTest->testTransformHttpException()',
+            $message['trace']
+        );
+        unset($message['trace']);
+
         self::assertEquals(
             [
                 'error' => 'Internal Server Error occurred.',
@@ -89,10 +110,17 @@ class ExceptionTransformerTest extends TestCase
             }
         };
         $message = ExceptionTransformer::transformException($ex)->getFullArray();
+
         self::assertStringContainsString('exception-', $message['exceptionId']);
         unset($message['exceptionId']);
         self::assertInstanceOf(ExceptionWithContextInterface::class, $message['exception']);
         unset($message['exception']);
+        self::assertStringContainsString(
+            'Keboola\ErrorControl\Tests\Message\ExceptionTransformerTest->testTransformContextException()',
+            $message['trace']
+        );
+        unset($message['trace']);
+
         self::assertEquals(
             [
                 'error' => 'Internal Server Error occurred.',

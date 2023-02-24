@@ -10,7 +10,6 @@ use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
 use Keboola\ErrorControl\EventListener\ExceptionListener;
 use Monolog\Handler\TestHandler;
-use Monolog\Level;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -57,12 +56,11 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(500, $response->getStatusCode());
         $responseBody = json_decode((string) $response->getContent(), true);
         self::assertIsArray($responseBody);
-        self::assertCount(5, $responseBody);
+        self::assertCount(4, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
         self::assertEquals('12', $responseBody['code']);
         self::assertEquals('Internal Server Error occurred.', $responseBody['error']);
         self::assertEquals('error', $responseBody['status']);
-        self::assertEquals([], $responseBody['context']);
         $record = $handler->getRecords()[0];
         self::assertEquals(Logger::CRITICAL, $record['level']);
         self::assertIsArray($record['context']);
@@ -130,7 +128,14 @@ class ExceptionListenerTest extends TestCase
             'statusCode' => 421,
             'exceptionCode' => '421',
             'message' => 'exception',
-            'loggerLevel' => Logger::ERROR,
+            'expectedBody' => [
+                'error' => 'exception',
+                'code' => 421,
+                'status' => 'error',
+                'context' => [
+                    'validation_errors' => ['Field is missing.'],
+                ],
+            ],
         ];
 
         yield 'HttpException' => [
@@ -147,7 +152,14 @@ class ExceptionListenerTest extends TestCase
             'statusCode' => 421,
             'exceptionCode' => '421',
             'message' => 'exception',
-            'loggerLevel' => Logger::ERROR,
+            'expectedBody' => [
+                'error' => 'exception',
+                'code' => 421,
+                'status' => 'error',
+                'context' => [
+                    'validation_errors' => ['Field is missing.'],
+                ],
+            ],
         ];
 
         yield 'InternalException' => [
@@ -164,7 +176,11 @@ class ExceptionListenerTest extends TestCase
             'statusCode' => 500,
             'exceptionCode' => '12',
             'message' => 'Internal Server Error occurred.',
-            'loggerLevel' => Logger::CRITICAL,
+            'expectedBody' => [
+                'error' => 'Internal Server Error occurred.',
+                'code' => 12,
+                'status' => 'error',
+            ],
         ];
     }
 
@@ -176,7 +192,7 @@ class ExceptionListenerTest extends TestCase
         int $statusCode,
         string $exceptionCode,
         string $message,
-        int $loggerLevel
+        array $expectedBody
     ): void {
         $request = new Request();
         $event = new ExceptionEvent(
@@ -194,30 +210,16 @@ class ExceptionListenerTest extends TestCase
         self::assertTrue($response->headers->has('Access-Control-Allow-Origin'));
         self::assertTrue($response->headers->has('Access-Control-Allow-Headers'));
         self::assertEquals($statusCode, $response->getStatusCode());
+
         $responseBody = json_decode((string) $response->getContent(), true);
         self::assertIsArray($responseBody);
-        self::assertCount(5, $responseBody);
         self::assertStringStartsWith('exception-', $responseBody['exceptionId']);
-        self::assertEquals($exceptionCode, $responseBody['code']);
-        self::assertEquals($message, $responseBody['error']);
-        self::assertEquals('error', $responseBody['status']);
-        self::assertEquals([
-            'validation_errors' => [
-                'Field is missing.',
-            ],
-        ], $responseBody['context']);
-        $record = $handler->getRecords()[0];
-        self::assertIsArray($record['context']);
-        self::assertEquals($loggerLevel, $record['level']);
-        self::assertEquals($exception, $record['context']['exception']);
-        self::assertEquals([
-            'validation_errors' => [
-                'Field is missing.',
-            ],
-        ], $record['context']['context']);
-        self::assertIsString($record['context']['exceptionId']);
-        self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
-        self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
+        unset($responseBody['exceptionId']);
+
+        self::assertSame(
+            $expectedBody,
+            $responseBody
+        );
     }
 
     public function testHandleUserExceptionZero(): void

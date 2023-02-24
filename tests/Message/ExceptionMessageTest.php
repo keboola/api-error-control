@@ -20,6 +20,14 @@ class ExceptionMessageTest extends TestCase
         self::assertEquals('abc123', $message->getExceptionId());
         self::assertEquals(300, $message->getStatusCode());
         self::assertEquals(['foo' => 'bar'], $message->getContext());
+
+        $fullArray = $message->getFullArray();
+        self::assertStringContainsString(
+            'Keboola\ErrorControl\Tests\Message\ExceptionMessageTest->testAccessors()',
+            $fullArray['trace']
+        );
+        unset($fullArray['trace']);
+
         self::assertEquals(
             [
                 'error' => 'foo',
@@ -29,7 +37,7 @@ class ExceptionMessageTest extends TestCase
                 'status' => 'error',
                 'context' => ['foo' => 'bar'],
             ],
-            $message->getFullArray()
+            $fullArray
         );
         self::assertEquals(
             [
@@ -37,7 +45,6 @@ class ExceptionMessageTest extends TestCase
                 'code' => 123,
                 'exceptionId' => 'abc123',
                 'status' => 'error',
-                'context' => ['foo' => 'bar'],
             ],
             $message->getSafeArray()
         );

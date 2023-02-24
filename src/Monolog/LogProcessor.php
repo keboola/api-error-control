@@ -51,20 +51,6 @@ class LogProcessor implements ProcessorInterface
             $record['extra'] = array_merge($this->logInfo->toArray(), $record['extra']);
         }
 
-        $context = $record['context'] ?? [];
-        $exception = $context['exception'] ?? null;
-
-        if ($exception instanceof Throwable) {
-            unset($context['exception']);
-
-            $context['exceptionId'] = $context['exceptionId'] ?? ExceptionIdGenerator::generateId();
-            $context['exception'] = [
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-                'trace' => $exception->getTraceAsString(),
-            ];
-        }
-        $record['context'] = $context;
         $record['extra']['app'] = $this->appName;
         $record['extra']['pid'] = getmypid();
         $record['extra']['priority'] = $record['level_name'];
