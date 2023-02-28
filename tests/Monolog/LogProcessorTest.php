@@ -124,34 +124,6 @@ class LogProcessorTest extends TestCase
         self::assertCount(2, $newRecord['context']);
     }
 
-    public function testProcessRecordExceptionWithFormatter(): void
-    {
-        self::markTestSkipped('one day possibly');
-        /*
-        $record = new LogRecord(
-            new DateTimeImmutable(),
-            'test',
-            Level::Info,
-            'test',
-            [
-                'exceptionId' => '12345',
-                'exception' => new Exception('exception message', 543),
-            ],
-            ['channel' => 'test'],
-        );
-        $formatter = new JsonFormatter();
-        $processor = new LogProcessor('test-app');
-        $newRecord = $processor($record);
-        self::assertInstanceOf(LogRecord::class, $newRecord);
-        $formatted = $formatter->format($newRecord);
-        self::assertStringContainsString(
-            // phpcs:ignore Generic.Files.LineLength
-            '{"message":"test","context":{"exceptionId":"12345","exception":{"class":"Exception","message":"exception message","code":543',
-            $formatted
-        );
-        */
-    }
-
     public function testLogProcessorOnlyUsesLogInfoInterface(): void
     {
         $record = [
