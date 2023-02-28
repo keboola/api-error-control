@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Monolog;
 
-use Keboola\ErrorControl\ExceptionIdGenerator;
-use Monolog\Logger;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
-use Throwable;
 
 /**
  * @phpstan-type Level Logger::DEBUG|Logger::INFO|Logger::NOTICE|Logger::WARNING|Logger::ERROR|Logger::CRITICAL|Logger::ALERT|Logger::EMERGENCY

@@ -9,10 +9,7 @@ use Exception;
 use Keboola\ErrorControl\Monolog\LogInfo;
 use Keboola\ErrorControl\Monolog\LogInfoInterface;
 use Keboola\ErrorControl\Monolog\LogProcessor;
-use Monolog\Formatter\JsonFormatter;
-use Monolog\Level;
 use Monolog\Logger;
-use Monolog\LogRecord;
 use PHPUnit\Framework\TestCase;
 
 class LogProcessorTest extends TestCase
