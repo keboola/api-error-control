@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Message;
 
+use Keboola\CommonExceptions\UserExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 class ExceptionMessage
@@ -41,6 +43,12 @@ class ExceptionMessage
     {
         $data = $this->getFullArray();
         unset($data['exception']);
+        unset($data['trace']);
+        if (!$this->exception instanceof UserExceptionInterface &&
+            !$this->exception instanceof HttpExceptionInterface
+        ) {
+            unset($data['context']);
+        }
         return $data;
     }
 
@@ -53,6 +61,7 @@ class ExceptionMessage
             'exceptionId' => $this->exceptionId,
             'status' => 'error',
             'context' => $this->context,
+            'trace' => $this->exception->getTraceAsString(),
         ];
     }
 

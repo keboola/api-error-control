@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Monolog;
 
-use Keboola\ErrorControl\ExceptionIdGenerator;
 use Monolog\Logger;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
-use Throwable;
 
 /**
  * @phpstan-type Level Logger::DEBUG|Logger::INFO|Logger::NOTICE|Logger::WARNING|Logger::ERROR|Logger::CRITICAL|Logger::ALERT|Logger::EMERGENCY
@@ -51,20 +49,6 @@ class LogProcessor implements ProcessorInterface
             $record['extra'] = array_merge($this->logInfo->toArray(), $record['extra']);
         }
 
-        $context = $record['context'] ?? [];
-        $exception = $context['exception'] ?? null;
-
-        if ($exception instanceof Throwable) {
-            unset($context['exception']);
-
-            $context['exceptionId'] = $context['exceptionId'] ?? ExceptionIdGenerator::generateId();
-            $context['exception'] = [
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-                'trace' => $exception->getTraceAsString(),
-            ];
-        }
-        $record['context'] = $context;
         $record['extra']['app'] = $this->appName;
         $record['extra']['pid'] = getmypid();
         $record['extra']['priority'] = $record['level_name'];
