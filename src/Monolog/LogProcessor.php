@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Keboola\ErrorControl\Monolog;
 
+use Monolog\Logger;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
