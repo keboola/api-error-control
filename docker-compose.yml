@@ -13,7 +13,6 @@ services:
       - AZURE_ABS_CONNECTION_STRING
       - AZURE_ABS_CONTAINER
 
-
   dev:
     build:
       context: .
