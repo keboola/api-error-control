@@ -16,10 +16,10 @@ strategy:
       PHP_VERSION: 8.3
 
 steps:
-  - script: docker-compose build --build-arg PHP_VERSION=$(PHP_VERSION) ci
+  - script: docker compose build --build-arg PHP_VERSION=$(PHP_VERSION) ci
     displayName: Build Docker image
 
-  - script: docker-compose run --rm ci
+  - script: docker compose run --rm ci
     displayName: Run Tests
     env:
       AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
