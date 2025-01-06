@@ -14,8 +14,8 @@
         "ext-json": "*",
         "keboola/common-exceptions": "^1.0",
         "monolog/monolog": "^2.0|^3.0",
-        "symfony/http-foundation": "^5.0|^6.0|^7.0",
-        "symfony/http-kernel": "^5.0|^6.0|^7.0"
+        "symfony/http-foundation": "^6.0|^7.0",
+        "symfony/http-kernel": "^6.0|^7.0"
     },
     "require-dev": {
         "keboola/coding-standard": ">=13.0",
