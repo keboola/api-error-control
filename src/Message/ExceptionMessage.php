@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Message;
 
 use Keboola\CommonExceptions\UserExceptionInterface;
+use stdClass;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
@@ -52,15 +53,31 @@ class ExceptionMessage
         return $data;
     }
 
+    /**
+     * @return array{
+     *     error: string,
+     *     code: int,
+     *     exception: Throwable,
+     *     exceptionId: string,
+     *     status: string,
+     *     context: array|stdClass,
+     *     trace: string,
+     * }
+     */
     public function getFullArray(): array
     {
+        $context = $this->context;
+        if ($context === []) {
+            $context = new stdClass();
+        }
+
         return [
             'error' => $this->error,
             'code' => $this->code,
             'exception' => $this->exception,
             'exceptionId' => $this->exceptionId,
             'status' => 'error',
-            'context' => $this->context,
+            'context' => $context,
             'trace' => $this->exception->getTraceAsString(),
         ];
     }

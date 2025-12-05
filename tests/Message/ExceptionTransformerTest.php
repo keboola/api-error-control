@@ -9,6 +9,7 @@ use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
 use Keboola\ErrorControl\Message\ExceptionTransformer;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ExceptionTransformerTest extends TestCase
@@ -32,7 +33,7 @@ class ExceptionTransformerTest extends TestCase
                 'code' => 0,
                 'exception' => $ex,
                 'status' => 'error',
-                'context' => [],
+                'context' => new stdClass(),
             ],
             $message
         );
@@ -59,7 +60,7 @@ class ExceptionTransformerTest extends TestCase
                 'error' => 'test',
                 'code' => 0,
                 'status' => 'error',
-                'context' => [],
+                'context' => new stdClass(),
             ],
             $message
         );
@@ -95,7 +96,7 @@ class ExceptionTransformerTest extends TestCase
                 'error' => 'Internal Server Error occurred.',
                 'code' => 123,
                 'status' => 'error',
-                'context' => [],
+                'context' => new stdClass(),
             ],
             $message
         );
