@@ -18,7 +18,7 @@ services:
       context: .
       target: dev
       args:
-        PHP_VERSION: 8.0
+        PHP_VERSION: "8.2"
     volumes:
       - ./:/code
     environment:
