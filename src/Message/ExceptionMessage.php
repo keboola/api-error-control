@@ -41,7 +41,7 @@ class ExceptionMessage
      *     exception: Throwable,
      *     exceptionId: string,
      *     status: string,
-     *     context: array|stdClass,
+     *     context: object,
      *     trace: string,
      * }
      */
