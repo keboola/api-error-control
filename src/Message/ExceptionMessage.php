@@ -47,18 +47,13 @@ class ExceptionMessage
      */
     public function getFullArray(): array
     {
-        $context = $this->context;
-        if ($context === []) {
-            $context = new stdClass();
-        }
-
         return [
             'error' => $this->error,
             'code' => $this->code,
             'exception' => $this->exception,
             'exceptionId' => $this->exceptionId,
             'status' => 'error',
-            'context' => $context,
+            'context' => (object) $this->context,
             'trace' => $this->exception->getTraceAsString(),
         ];
     }

@@ -127,7 +127,7 @@ class ExceptionTransformerTest extends TestCase
                 'error' => 'Internal Server Error occurred.',
                 'code' => 0,
                 'status' => 'error',
-                'context' => ['bar' => 'Kochba'],
+                'context' => (object) ['bar' => 'Kochba'],
             ],
             $message
         );

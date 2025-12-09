@@ -36,7 +36,7 @@ class ExceptionMessageTest extends TestCase
                 'exception' => $ex,
                 'exceptionId' => 'abc123',
                 'status' => 'error',
-                'context' => ['foo' => 'bar'],
+                'context' => (object) ['foo' => 'bar'],
             ],
             $fullArray,
         );
