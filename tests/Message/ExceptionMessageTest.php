@@ -7,6 +7,7 @@ namespace Keboola\ErrorControl\Tests\Message;
 use Exception;
 use Keboola\ErrorControl\Message\ExceptionMessage;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class ExceptionMessageTest extends TestCase
 {
@@ -24,7 +25,7 @@ class ExceptionMessageTest extends TestCase
         $fullArray = $message->getFullArray();
         self::assertStringContainsString(
             'Keboola\ErrorControl\Tests\Message\ExceptionMessageTest->testAccessors()',
-            $fullArray['trace']
+            $fullArray['trace'],
         );
         unset($fullArray['trace']);
 
@@ -35,9 +36,9 @@ class ExceptionMessageTest extends TestCase
                 'exception' => $ex,
                 'exceptionId' => 'abc123',
                 'status' => 'error',
-                'context' => ['foo' => 'bar'],
+                'context' => (object) ['foo' => 'bar'],
             ],
-            $fullArray
+            $fullArray,
         );
         self::assertEquals(
             [
@@ -46,7 +47,27 @@ class ExceptionMessageTest extends TestCase
                 'exceptionId' => 'abc123',
                 'status' => 'error',
             ],
-            $message->getSafeArray()
+            $message->getSafeArray(),
+        );
+    }
+
+    public function testGetFullArrayWithEmptyContext(): void
+    {
+        $ex = new Exception('test');
+        $message = new ExceptionMessage('foo', 123, $ex, 'abc123', 300, []);
+        $fullArray = $message->getFullArray();
+        unset($fullArray['trace']);
+
+        self::assertEquals(
+            [
+                'error' => 'foo',
+                'code' => 123,
+                'exception' => $ex,
+                'exceptionId' => 'abc123',
+                'status' => 'error',
+                'context' => new stdClass(),
+            ],
+            $fullArray,
         );
     }
 }

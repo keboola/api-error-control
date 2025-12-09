@@ -13,6 +13,7 @@ use Monolog\Handler\TestHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -66,7 +67,7 @@ class ExceptionListenerTest extends TestCase
         self::assertIsArray($record['context']);
         self::assertArrayHasKey('exception', $record['context']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertEquals([], $record['context']['context']);
+        self::assertEquals(new stdClass(), $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
@@ -104,7 +105,7 @@ class ExceptionListenerTest extends TestCase
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertIsArray($record['context']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertEquals([], $record['context']['context']);
+        self::assertEquals(new stdClass(), $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
@@ -256,7 +257,7 @@ class ExceptionListenerTest extends TestCase
         self::assertIsArray($record['context']);
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertEquals([], $record['context']['context']);
+        self::assertEquals(new stdClass(), $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
@@ -293,7 +294,7 @@ class ExceptionListenerTest extends TestCase
         self::assertIsArray($record['context']);
         self::assertEquals(Logger::ERROR, $record['level']);
         self::assertEquals($exception, $record['context']['exception']);
-        self::assertEquals([], $record['context']['context']);
+        self::assertEquals(new stdClass(), $record['context']['context']);
         self::assertIsString($record['context']['exceptionId']);
         self::assertStringStartsWith('exception-', $record['context']['exceptionId']);
         self::assertSame($responseBody['exceptionId'], $record['context']['exceptionId']);
@@ -320,7 +321,7 @@ class ExceptionListenerTest extends TestCase
         self::assertNotNull($response);
         self::assertEquals(1, preg_match(
             '#{"error":"test exception with special \\\" \' characters < > \^ \$ & end","code":0,' .
-            '"exceptionId":"exception-[a-z0-9]+","status":"error","context":\[\]}#',
+            '"exceptionId":"exception-[a-z0-9]+","status":"error","context":\{\}}#',
             (string) $response->getContent()
         ));
     }
