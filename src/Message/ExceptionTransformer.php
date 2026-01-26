@@ -6,6 +6,7 @@ namespace Keboola\ErrorControl\Message;
 
 use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
+use Keboola\ErrorControl\Exception\CustomCodeExceptionInterface;
 use Keboola\ErrorControl\ExceptionIdGenerator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -41,6 +42,10 @@ class ExceptionTransformer
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             $code = $exception->getCode();
+        }
+
+        if ($exception instanceof CustomCodeExceptionInterface) {
+            $code = $exception->getCustomCode() ?? $code;
         }
 
         return new ExceptionMessage(

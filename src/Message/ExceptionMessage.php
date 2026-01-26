@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Keboola\ErrorControl\Message;
 
 use Keboola\CommonExceptions\UserExceptionInterface;
-use stdClass;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
@@ -13,7 +12,7 @@ class ExceptionMessage
 {
     public function __construct(
         private readonly string $error,
-        private readonly int $code,
+        private readonly int|string $code,
         private readonly Throwable $exception,
         private readonly string $exceptionId,
         private readonly int $statusCode,
@@ -37,7 +36,7 @@ class ExceptionMessage
     /**
      * @return array{
      *     error: string,
-     *     code: int,
+     *     code: int|string,
      *     exception: Throwable,
      *     exceptionId: string,
      *     status: string,
@@ -63,7 +62,7 @@ class ExceptionMessage
         return $this->error;
     }
 
-    public function getCode(): int
+    public function getCode(): int|string
     {
         return $this->code;
     }

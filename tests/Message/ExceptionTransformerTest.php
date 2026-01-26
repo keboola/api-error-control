@@ -7,6 +7,7 @@ namespace Keboola\ErrorControl\Tests\Message;
 use Exception;
 use Keboola\CommonExceptions\ExceptionWithContextInterface;
 use Keboola\CommonExceptions\UserExceptionInterface;
+use Keboola\ErrorControl\Exception\CustomCodeExceptionInterface;
 use Keboola\ErrorControl\Message\ExceptionTransformer;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -128,6 +129,68 @@ class ExceptionTransformerTest extends TestCase
                 'code' => 0,
                 'status' => 'error',
                 'context' => (object) ['bar' => 'Kochba'],
+            ],
+            $message
+        );
+    }
+
+    public function testTransformCustomCodeException(): void
+    {
+        $ex = new class('test') extends Exception implements CustomCodeExceptionInterface {
+            public function getCustomCode(): ?string
+            {
+                return 'custom.error.code';
+            }
+        };
+        $message = ExceptionTransformer::transformException($ex)->getFullArray();
+
+        self::assertStringContainsString('exception-', $message['exceptionId']);
+        unset($message['exceptionId']);
+        self::assertInstanceOf(CustomCodeExceptionInterface::class, $message['exception']);
+        unset($message['exception']);
+        self::assertStringContainsString(
+            'Keboola\ErrorControl\Tests\Message\ExceptionTransformerTest->testTransformCustomCodeException()',
+            $message['trace']
+        );
+        unset($message['trace']);
+
+        self::assertEquals(
+            [
+                'error' => 'Internal Server Error occurred.',
+                'code' => 'custom.error.code',
+                'status' => 'error',
+                'context' => new stdClass(),
+            ],
+            $message
+        );
+    }
+
+    public function testTransformCustomCodeExceptionNullCode(): void
+    {
+        $ex = new class('test', 456) extends Exception implements CustomCodeExceptionInterface {
+            public function getCustomCode(): ?string
+            {
+                return null;
+            }
+        };
+        $message = ExceptionTransformer::transformException($ex)->getFullArray();
+
+        self::assertStringContainsString('exception-', $message['exceptionId']);
+        unset($message['exceptionId']);
+        self::assertInstanceOf(CustomCodeExceptionInterface::class, $message['exception']);
+        unset($message['exception']);
+        self::assertStringContainsString(
+            'Keboola\ErrorControl\Tests\Message\ExceptionTransformerTest->testTransformCustomCodeExceptionNullCode()',
+            $message['trace']
+        );
+        unset($message['trace']);
+
+        self::assertEquals(
+            [
+                'error' => 'Internal Server Error occurred.',
+                'code' => 456,
+                'status' => 'error',
+                'context' => new stdClass(),
             ],
             $message
         );
